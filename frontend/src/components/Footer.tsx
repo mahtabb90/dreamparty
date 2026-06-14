@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Send } from 'lucide-react';
-import logoImg from '../assets/dreamparty-logo.png';
+import logoImg from '../assets/dreamparty-logo-cropped-dark.png';
 
 export default function Footer() {
   const [email, setEmail] = useState('');
@@ -42,11 +42,12 @@ export default function Footer() {
                 src={logoImg} 
                 alt="DreamParty Logo" 
                 style={{
-                  height: '42px',
+                  height: '44px',
                   width: 'auto',
                   objectFit: 'contain',
-                  filter: 'drop-shadow(0 0 8px rgba(200, 122, 144, 0.55))',
-                  display: 'block'
+                  filter: 'drop-shadow(0 0 8px rgba(200, 122, 144, 0.4))',
+                  display: 'block',
+                  imageRendering: 'auto'
                 }} 
               />
             </a>

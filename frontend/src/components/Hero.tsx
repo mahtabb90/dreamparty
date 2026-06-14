@@ -1,5 +1,19 @@
 import { ArrowRight, Sparkles, Calendar, Heart } from 'lucide-react';
-import logoImg from '../assets/dreamparty-logo.png';
+import logoImg from '../assets/dreamparty-logo-cropped-dark.png';
+
+// Pseudo-random coordinates/durations for floating sparkles to avoid React hydration mismatches
+const heroSparklesData = [
+  { size: 10, left: 12, bottom: 5, color: '#dec39d', duration: 11, delay: 0 },
+  { size: 7, left: 78, bottom: 18, color: '#e5b3c0', duration: 13, delay: 1.5 },
+  { size: 12, left: 28, bottom: 2, color: '#c87a90', duration: 9, delay: 3 },
+  { size: 8, left: 88, bottom: 28, color: '#dfc9a5', duration: 15, delay: 0.5 },
+  { size: 14, left: 8, bottom: 22, color: '#dec39d', duration: 10, delay: 2 },
+  { size: 9, left: 62, bottom: -4, color: '#e5b3c0', duration: 12, delay: 4 },
+  { size: 8, left: 42, bottom: 14, color: '#c87a90', duration: 14, delay: 1.2 },
+  { size: 7, left: 92, bottom: 0, color: '#dfc9a5', duration: 11, delay: 3.2 },
+  { size: 11, left: 18, bottom: 32, color: '#dec39d', duration: 16, delay: 2.5 },
+  { size: 8, left: 68, bottom: 24, color: '#e5b3c0', duration: 8, delay: 0.8 }
+];
 
 export default function Hero() {
   const scrollToSection = (id: string) => {
@@ -12,16 +26,17 @@ export default function Hero() {
   return (
     <section className="section" style={{ minHeight: '92vh', display: 'flex', alignItems: 'center', paddingTop: '8rem', overflow: 'hidden', position: 'relative' }}>
       
-      {/* Large Soft Blush Glow behind Hero Section */}
+      {/* Large Soft Blush & Champagne Glow behind Hero Section */}
       <div 
+        className="champagne-ambient-glow"
         style={{
           position: 'absolute',
-          top: '15%',
-          left: '10%',
-          width: '50vw',
-          height: '50vw',
-          background: 'radial-gradient(circle, rgba(229, 179, 192, 0.22) 0%, rgba(200, 122, 144, 0.04) 70%, transparent 100%)',
-          filter: 'blur(120px)',
+          top: '10%',
+          left: '5%',
+          width: '60vw',
+          height: '60vw',
+          background: 'radial-gradient(circle, rgba(222, 195, 157, 0.22) 0%, rgba(200, 122, 144, 0.05) 65%, transparent 100%)',
+          filter: 'blur(130px)',
           zIndex: -1,
           pointerEvents: 'none'
         }}
@@ -33,92 +48,102 @@ export default function Hero() {
           {/* Hero Content (Left Side) */}
           <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem', textAlign: 'left' }}>
             
-            {/* Centerpiece Brand Crest & Tagline */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <div className="brand-crest" style={{
-                position: 'relative',
-                width: '56px',
-                height: '56px',
+            {/* Full Logo above main headline with animated glow, aura, and sparkles */}
+            <div style={{ 
+              marginBottom: '1.25rem', 
+              display: 'inline-flex', 
+              alignItems: 'center', 
+              position: 'relative',
+              padding: '10px 0',
+              alignSelf: 'flex-start'
+            }}>
+              {/* Soft rose-gold backdrop aura */}
+              <div style={{
+                position: 'absolute',
+                inset: '-15px',
+                background: 'radial-gradient(circle, rgba(255, 190, 170, 0.18) 0%, rgba(214, 138, 160, 0.06) 45%, transparent 70%)',
+                filter: 'blur(10px)',
                 borderRadius: '50%',
-                border: '1px solid rgba(222, 195, 157, 0.35)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: 'radial-gradient(circle, rgba(200, 122, 144, 0.15) 0%, transparent 80%)',
-                boxShadow: '0 0 20px rgba(222, 195, 157, 0.12)',
-                overflow: 'hidden'
-              }}>
-                {/* Outer spinning dashed ring */}
-                <div style={{
-                  position: 'absolute',
-                  top: '-4px', left: '-4px', right: '-4px', bottom: '-4px',
-                  border: '1px dashed rgba(222, 195, 157, 0.2)',
-                  borderRadius: '50%',
-                  animation: 'spin 30s linear infinite'
-                }} />
-                
-                {/* Image Cropping Wrapper */}
-                <div style={{
-                  position: 'relative',
-                  width: '36px',
-                  height: '36px',
-                  borderRadius: '50%',
-                  overflow: 'hidden',
-                }}>
-                  <img 
-                    src={logoImg} 
-                    alt="DreamParty Logo Emblem" 
-                    style={{
-                      position: 'absolute',
-                      top: '-24px',
-                      left: '-24px',
-                      height: '84px',
-                      width: 'auto',
-                      maxWidth: 'none',
-                      filter: 'drop-shadow(0 0 6px rgba(200, 122, 144, 0.65))',
-                      display: 'block'
-                    }} 
-                  />
-                </div>
-              </div>
+                zIndex: -1,
+                animation: 'logo-aura-pulse 10s infinite alternate ease-in-out',
+                pointerEvents: 'none'
+              }} />
 
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: '0.82rem',
-                  fontWeight: 700,
-                  letterSpacing: '0.22em',
-                  color: 'var(--color-primary)',
-                  textTransform: 'uppercase',
-                }}>
-                  DreamParty
-                </span>
-                <span style={{
-                  fontFamily: 'var(--font-serif)',
-                  fontSize: '0.75rem',
-                  fontStyle: 'italic',
-                  color: '#dec39d',
-                  letterSpacing: '0.05em'
-                }}>
-                  Atelier de Célébration
-                </span>
-              </div>
+              {/* Twinkling star sparkles */}
+              <div style={{
+                position: 'absolute',
+                top: '-4px',
+                left: '12px',
+                color: '#dec39d',
+                fontSize: '13px',
+                textShadow: '0 0 4px #dec39d',
+                animation: 'logo-sparkle-twinkle 4s infinite ease-in-out',
+                pointerEvents: 'none'
+              }}>✦</div>
+              <div style={{
+                position: 'absolute',
+                bottom: '-4px',
+                right: '35px',
+                color: '#e5b3c0',
+                fontSize: '10px',
+                textShadow: '0 0 4px #e5b3c0',
+                animation: 'logo-sparkle-twinkle 5s infinite ease-in-out 1.5s',
+                pointerEvents: 'none'
+              }}>✦</div>
+              <div style={{
+                position: 'absolute',
+                top: '15px',
+                right: '-8px',
+                color: '#dfc9a5',
+                fontSize: '11px',
+                textShadow: '0 0 4px #dfc9a5',
+                animation: 'logo-sparkle-twinkle 6s infinite ease-in-out 3s',
+                pointerEvents: 'none'
+              }}>✦</div>
+
+              {/* Floating logo image */}
+              <img 
+                src={logoImg} 
+                alt="DreamParty Logo" 
+                className="hero-logo-animated"
+                style={{
+                  width: 'clamp(220px, 25vw, 270px)',
+                  height: 'auto',
+                  objectFit: 'contain',
+                  display: 'block',
+                  imageRendering: 'auto'
+                }} 
+              />
             </div>
 
             {/* Large Luxury Headline */}
             <h1 style={{ 
-              fontSize: 'clamp(2.5rem, 5.2vw, 4.4rem)', 
-              fontWeight: 400, 
-              lineHeight: 1.15,
               color: '#fff',
-              margin: '0.5rem 0'
+              margin: '0 0 1.5rem 0',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.3rem'
             }}>
-              <span className="text-gradient-primary" style={{ fontFamily: 'var(--font-display)', fontWeight: 800 }}>Where </span>
-              <br />
-              <span className="text-gradient-magic" style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 500, marginRight: '0.5rem' }}>Celebrations</span>
-              <br />
-              <span className="text-gradient-primary" style={{ fontFamily: 'var(--font-display)', fontWeight: 800 }}>Become </span>
-              <span className="text-gradient-magic" style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 500 }}>Memories.</span>
+              <span className="text-gradient-primary" style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 'clamp(1.6rem, 3.2vw, 2.7rem)', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+                Make Every
+              </span>
+              <span style={{ 
+                fontFamily: 'var(--font-serif)', 
+                fontStyle: 'italic', 
+                fontWeight: 600, 
+                fontSize: 'clamp(2.3rem, 4.6vw, 3.9rem)', 
+                background: 'linear-gradient(135deg, #f7f2eb 0%, #dfc9a5 35%, #e5b3c0 70%, #c87a90 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                filter: 'drop-shadow(0 0 10px rgba(229, 179, 192, 0.45)) drop-shadow(0 0 25px rgba(200, 122, 144, 0.25))',
+                lineHeight: 1.1,
+                paddingBottom: '0.1rem'
+              }}>
+                Birthday
+              </span>
+              <span className="text-gradient-primary" style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 'clamp(1.9rem, 3.8vw, 3.2rem)', letterSpacing: '-0.01em', lineHeight: 1.1 }}>
+                Unforgettable
+              </span>
             </h1>
 
             {/* Subtitle / Elegant Description */}
@@ -129,19 +154,20 @@ export default function Hero() {
               fontStyle: 'italic',
               lineHeight: '1.6', 
               maxWidth: '520px',
-              opacity: 0.9
+              opacity: 0.9,
+              margin: '0 0 1.75rem 0'
             }}>
-              Bespoke invitation suites, curated aesthetics, celestial alignment insights, and signature celebration checkbooks created for the sophisticated host.
+              Create beautiful invitations, discover curated themes, and plan every birthday detail in one elegant place.
             </p>
 
             {/* CTAs */}
             <div style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
               <button onClick={() => scrollToSection('planner')} className="btn btn-primary" style={{ padding: '1.05rem 2.5rem' }}>
-                <span>Enter the Atelier</span>
+                <span>Create My Invitation</span>
                 <ArrowRight size={16} />
               </button>
               <button onClick={() => scrollToSection('features')} className="btn btn-secondary" style={{ padding: '1.05rem 2.5rem' }}>
-                Explore Gallery
+                Explore Ideas
               </button>
             </div>
 
@@ -149,15 +175,15 @@ export default function Hero() {
             <div style={{ display: 'flex', gap: '1.75rem', marginTop: '1.5rem', flexWrap: 'wrap', borderTop: '1px solid rgba(222, 195, 157, 0.08)', paddingTop: '1.5rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#dec39d', fontSize: '0.82rem', fontFamily: 'var(--font-display)', fontWeight: 500, letterSpacing: '0.03em' }}>
                 <Sparkles size={14} color="#c87a90" />
-                <span>Bespoke Design</span>
+                <span>Beautiful Invitations</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#dec39d', fontSize: '0.82rem', fontFamily: 'var(--font-display)', fontWeight: 500, letterSpacing: '0.03em' }}>
                 <Calendar size={14} color="#c87a90" />
-                <span>Seamless RSVPs</span>
+                <span>Curated Themes</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#dec39d', fontSize: '0.82rem', fontFamily: 'var(--font-display)', fontWeight: 500, letterSpacing: '0.03em' }}>
                 <Heart size={14} color="#c87a90" />
-                <span>No Invitation Fees</span>
+                <span>No Account Required</span>
               </div>
             </div>
           </div>
@@ -309,6 +335,20 @@ export default function Hero() {
                 }} />
               </div>
 
+              {/* Soft champagne glow behind the card */}
+              <div 
+                style={{
+                  position: 'absolute',
+                  width: '320px',
+                  height: '420px',
+                  background: 'radial-gradient(circle, rgba(222, 195, 157, 0.38) 0%, rgba(200, 122, 144, 0.12) 55%, transparent 100%)',
+                  filter: 'blur(35px)',
+                  transform: 'rotate(2deg) translate(15px, -10px)',
+                  zIndex: 4,
+                  pointerEvents: 'none'
+                }}
+              />
+
               {/* Main Bespoke Invitation Card */}
               <div 
                 className="scene-invitation-card"
@@ -385,7 +425,7 @@ export default function Hero() {
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
                   }}>
-                    Aurelia's
+                    Maja's
                   </h3>
                   <h2 style={{
                     fontFamily: 'var(--font-display)',
@@ -413,7 +453,7 @@ export default function Hero() {
                     marginBottom: '0.75rem',
                     opacity: 0.95
                   }}>
-                    “Champagne towers & velvet nights under stargazing lights”
+                    “An evening of champagne, laughter and unforgettable memories.”
                   </p>
                   
                   <div style={{ width: '30px', height: '1px', backgroundColor: 'rgba(222, 195, 157, 0.28)', margin: '0 auto 0.75rem auto' }} />
@@ -439,84 +479,198 @@ export default function Hero() {
                 </div>
               </div>
 
+              {/* Floating rose-gold particles specifically around invitation card */}
+              <div style={{ position: 'absolute', width: '270px', height: '350px', transform: 'rotate(2deg) translate(15px, -10px)', zIndex: 6, pointerEvents: 'none' }}>
+                <div style={{
+                  position: 'absolute',
+                  top: '-15px',
+                  left: '40px',
+                  color: '#dec39d',
+                  fontSize: '14px',
+                  textShadow: '0 0 5px #dec39d',
+                  animation: 'float-particle-card 6s infinite ease-in-out'
+                }}>✦</div>
+                <div style={{
+                  position: 'absolute',
+                  top: '120px',
+                  right: '-12px',
+                  color: '#e5b3c0',
+                  fontSize: '12px',
+                  textShadow: '0 0 5px #e5b3c0',
+                  animation: 'float-particle-card 7s infinite ease-in-out 1s'
+                }}>✦</div>
+                <div style={{
+                  position: 'absolute',
+                  bottom: '-10px',
+                  left: '80px',
+                  color: '#c87a90',
+                  fontSize: '15px',
+                  textShadow: '0 0 5px #c87a90',
+                  animation: 'float-particle-card 8s infinite ease-in-out 2s'
+                }}>✦</div>
+                <div style={{
+                  position: 'absolute',
+                  bottom: '160px',
+                  left: '-15px',
+                  color: '#dfc9a5',
+                  fontSize: '13px',
+                  textShadow: '0 0 5px #dfc9a5',
+                  animation: 'float-particle-card 6.5s infinite ease-in-out 1.5s'
+                }}>✦</div>
+                <div style={{
+                  position: 'absolute',
+                  top: '20px',
+                  right: '20px',
+                  color: '#dfc9a5',
+                  fontSize: '11px',
+                  textShadow: '0 0 5px #dfc9a5',
+                  animation: 'float-particle-card 5.5s infinite ease-in-out 0.5s'
+                }}>✦</div>
+              </div>
 
-              {/* VELVET GIFT BOX (Bottom Left Overlay) */}
-              <div className="scene-gift-box" style={{
-                position: 'absolute',
-                bottom: '-2%',
-                left: '2%',
-                width: '120px',
-                height: '120px',
-                background: 'linear-gradient(135deg, #351d22 0%, #211215 100%)',
-                borderRadius: '10px',
-                boxShadow: '0 20px 40px rgba(0,0,0,0.65), inset 0 0 8px rgba(255,255,255,0.02)',
-                border: '1px solid rgba(200, 122, 144, 0.12)',
-                zIndex: 6,
-                transform: 'rotate(-5deg)'
-              }}>
-                {/* Gift lid */}
-                <div style={{
-                  position: 'absolute',
-                  top: 0, left: '-2%', width: '104%', height: '26px',
-                  background: 'linear-gradient(135deg, #44262c 0%, #2b171c 100%)',
-                  borderRadius: '12px 12px 3px 3px',
-                  boxShadow: '0 3px 8px rgba(0,0,0,0.35)',
-                  borderBottom: '1px solid rgba(255,255,255,0.04)'
-                }} />
 
-                {/* Champagne Gold Ribbon Wrapping */}
-                <div style={{
+              {/* Champagne Composition backglow */}
+              <div 
+                style={{
                   position: 'absolute',
-                  left: 'calc(50% - 8px)',
-                  top: 0, width: '16px', height: '100%',
-                  background: 'linear-gradient(to right, #dfc9a5, #dec39d, #b69162)',
-                }} />
-                <div style={{
-                  position: 'absolute',
-                  top: 'calc(50% - 8px)',
-                  left: 0, width: '100%', height: '16px',
-                  background: 'linear-gradient(to bottom, #dfc9a5, #dec39d, #b69162)',
-                }} />
+                  bottom: '-12%',
+                  left: '-10%',
+                  width: '260px',
+                  height: '260px',
+                  background: 'radial-gradient(circle, rgba(222, 195, 157, 0.25) 0%, rgba(200, 122, 144, 0.06) 65%, transparent 100%)',
+                  filter: 'blur(30px)',
+                  zIndex: 5,
+                  pointerEvents: 'none'
+                }}
+              />
 
-                {/* Bow Tie structure */}
-                <div style={{
+              {/* LUXURY CHAMPAGNE COMPOSITION (Bottom Left Overlay) */}
+              <div 
+                className="scene-champagne-composition"
+                style={{
                   position: 'absolute',
-                  top: '-13px',
-                  left: 'calc(50% - 18px)',
-                  width: '36px',
-                  height: '26px',
-                  zIndex: 7
-                }}>
-                  {/* Left bow Loop */}
-                  <div style={{
-                    position: 'absolute',
-                    left: 0, top: '3px', width: '20px', height: '16px',
-                    border: '2px.5 solid #dfc9a5',
-                    borderRadius: '50% 50% 0 50%',
-                    transform: 'rotate(-25deg)',
-                    background: 'rgba(222, 195, 157, 0.2)'
-                  }} />
-                  {/* Right bow Loop */}
-                  <div style={{
-                    position: 'absolute',
-                    right: 0, top: '3px', width: '20px', height: '16px',
-                    border: '2px.5 solid #dfc9a5',
-                    borderRadius: '50% 50% 50% 0',
-                    transform: 'rotate(25deg)',
-                    background: 'rgba(222, 195, 157, 0.2)'
-                  }} />
-                  {/* Bow node */}
-                  <div style={{
-                    position: 'absolute',
-                    left: 'calc(50% - 6px)',
-                    top: '8px',
-                    width: '12px',
-                    height: '12px',
-                    borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #dfc9a5 0%, #b69162 100%)',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.3)'
-                  }} />
-                </div>
+                  bottom: '-8%',
+                  left: '-2%',
+                  width: '240px',
+                  height: '290px',
+                  zIndex: 6,
+                  pointerEvents: 'none',
+                  transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
+                }}
+              >
+                <svg width="240" height="290" viewBox="0 0 240 290">
+                  <defs>
+                    {/* Glass gradients */}
+                    <linearGradient id="glass-gradient" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="rgba(255,255,255,0.35)" />
+                      <stop offset="30%" stopColor="rgba(255,255,255,0.06)" />
+                      <stop offset="70%" stopColor="rgba(255,255,255,0.06)" />
+                      <stop offset="100%" stopColor="rgba(255,255,255,0.45)" />
+                    </linearGradient>
+                    <linearGradient id="champagne-liquid" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="rgba(245, 225, 195, 0.75)" />
+                      <stop offset="60%" stopColor="rgba(228, 203, 168, 0.85)" />
+                      <stop offset="100%" stopColor="rgba(206, 131, 153, 0.9)" />
+                    </linearGradient>
+                    <linearGradient id="glass-stem" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="rgba(255,255,255,0.3)" />
+                      <stop offset="50%" stopColor="rgba(255,255,255,0.12)" />
+                      <stop offset="100%" stopColor="rgba(255,255,255,0.38)" />
+                    </linearGradient>
+                    <radialGradient id="glass-base" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stopColor="rgba(255,255,255,0.2)" />
+                      <stop offset="100%" stopColor="transparent" />
+                    </radialGradient>
+                    {/* Bottle glass gradient */}
+                    <linearGradient id="bottle-glass" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="#0d080a" />
+                      <stop offset="25%" stopColor="#24151a" />
+                      <stop offset="50%" stopColor="#432832" />
+                      <stop offset="75%" stopColor="#24151a" />
+                      <stop offset="100%" stopColor="#0a0607" />
+                    </linearGradient>
+                    {/* Foil gradient */}
+                    <linearGradient id="foil-gold" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="#b69162" />
+                      <stop offset="30%" stopColor="#dec39d" />
+                      <stop offset="50%" stopColor="#f7f2eb" />
+                      <stop offset="70%" stopColor="#dec39d" />
+                      <stop offset="100%" stopColor="#8c6c40" />
+                    </linearGradient>
+                    {/* Label gradient */}
+                    <linearGradient id="label-gold" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0%" stopColor="#f7f2eb" />
+                      <stop offset="40%" stopColor="#dfc9a5" />
+                      <stop offset="80%" stopColor="#dec39d" />
+                      <stop offset="100%" stopColor="#c87a90" />
+                    </linearGradient>
+                  </defs>
+
+                  {/* Glass 1 (Back left of bottle) */}
+                  <g transform="translate(15, 110) rotate(-6)">
+                    {/* Bowl Outer */}
+                    <path d="M 8,10 Q 8,85 22,90 Q 36,85 36,10 Z" fill="url(#glass-gradient)" stroke="rgba(255,255,255,0.25)" strokeWidth="0.8" />
+                    {/* Liquid */}
+                    <path d="M 10,35 Q 10,84 22,88 Q 34,84 34,35 Z" fill="url(#champagne-liquid)" />
+                    {/* Bubbles */}
+                    <circle cx="16" cy="55" r="0.8" fill="#fff" opacity="0.85" />
+                    <circle cx="26" cy="68" r="1.1" fill="#fff" opacity="0.75" />
+                    <circle cx="21" cy="48" r="0.9" fill="#fff" opacity="0.9" />
+                    <circle cx="18" cy="74" r="0.7" fill="#fff" opacity="0.6" />
+                    <circle cx="28" cy="58" r="1" fill="#fff" opacity="0.8" />
+                    {/* Glass Rim highlight */}
+                    <path d="M 8,10 Q 22,13 36,10" stroke="rgba(255,255,255,0.6)" strokeWidth="0.8" fill="none" />
+                    {/* Glass reflection shine */}
+                    <path d="M 12,18 C 12,42 16,68 20,80" stroke="rgba(255,255,255,0.35)" strokeWidth="1.2" fill="none" />
+                    {/* Stem */}
+                    <line x1="22" y1="90" x2="22" y2="155" stroke="url(#glass-stem)" strokeWidth="2.5" />
+                    {/* Base */}
+                    <ellipse cx="22" cy="155" rx="18" ry="4" fill="url(#glass-base)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.8" />
+                  </g>
+
+                  {/* Champagne Bottle (Center) */}
+                  <g transform="translate(55, 10) rotate(5)">
+                    {/* Bottle Shadow inside SVG */}
+                    <path d="M 23,260 C 23,262 25,264 28,264 L 72,264 C 75,264 77,262 77,260 L 77,135 C 77,108 58,92 58,70 L 58,20 L 42,20 L 42,70 C 42,92 23,108 23,135 Z" fill="rgba(0,0,0,0.45)" filter="blur(8px)" />
+                    {/* Bottle Glass Body */}
+                    <path d="M 25,258 C 25,260 27,262 30,262 L 70,262 C 73,262 75,260 75,258 L 75,135 C 75,110 57,95 57,75 L 57,25 L 43,25 L 43,75 C 43,110 25,110 25,135 Z" fill="url(#bottle-glass)" stroke="rgba(255,255,255,0.06)" strokeWidth="0.8" />
+                    {/* Foil neck wrap */}
+                    <path d="M 43,75 C 43,75 50,78 57,75 L 57,25 L 59,25 C 60,25 60,20 60,20 L 40,20 C 40,20 40,25 41,25 L 43,25 Z" fill="url(#foil-gold)" />
+                    <path d="M 43,40 Q 50,43 57,40" stroke="rgba(0,0,0,0.18)" strokeWidth="0.8" fill="none" />
+                    <path d="M 43,55 Q 50,58 57,55" stroke="rgba(0,0,0,0.18)" strokeWidth="0.8" fill="none" />
+                    {/* Label */}
+                    <rect x="30" y="130" width="40" height="65" rx="4" fill="url(#label-gold)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.6" />
+                    <text x="50" y="152" fontFamily="var(--font-serif)" fontSize="6.5" fontWeight="bold" fill="#24151a" textAnchor="middle" letterSpacing="0.6">MAJA</text>
+                    <text x="50" y="162" fontFamily="var(--font-display)" fontSize="4.5" fill="rgba(36,21,26,0.8)" textAnchor="middle" letterSpacing="1.2">BRUT</text>
+                    <text x="50" y="180" fontSize="7" fill="#90475b" textAnchor="middle">✦</text>
+                    {/* Glass reflection shine on bottle */}
+                    <path d="M 32,135 C 32,110 46,90 46,75" stroke="rgba(255,255,255,0.18)" strokeWidth="1.5" fill="none" />
+                    <path d="M 28,140 L 28,245" stroke="rgba(255,255,255,0.15)" strokeWidth="2" fill="none" />
+                    <path d="M 72,140 L 72,245" stroke="rgba(0,0,0,0.3)" strokeWidth="1.5" fill="none" />
+                  </g>
+
+                  {/* Glass 2 (Front right of bottle) */}
+                  <g transform="translate(130, 125) rotate(8)">
+                    {/* Bowl Outer */}
+                    <path d="M 8,10 Q 8,85 22,90 Q 36,85 36,10 Z" fill="url(#glass-gradient)" stroke="rgba(255,255,255,0.28)" strokeWidth="0.8" />
+                    {/* Liquid */}
+                    <path d="M 10,35 Q 10,84 22,88 Q 34,84 34,35 Z" fill="url(#champagne-liquid)" />
+                    {/* Bubbles */}
+                    <circle cx="15" cy="62" r="0.7" fill="#fff" opacity="0.8" />
+                    <circle cx="25" cy="50" r="1" fill="#fff" opacity="0.9" />
+                    <circle cx="20" cy="72" r="0.9" fill="#fff" opacity="0.7" />
+                    <circle cx="18" cy="42" r="1.1" fill="#fff" opacity="0.85" />
+                    <circle cx="28" cy="65" r="0.8" fill="#fff" opacity="0.6" />
+                    {/* Glass Rim highlight */}
+                    <path d="M 8,10 Q 22,13 36,10" stroke="rgba(255,255,255,0.6)" strokeWidth="0.8" fill="none" />
+                    {/* Glass reflection shine */}
+                    <path d="M 12,18 C 12,42 16,68 20,80" stroke="rgba(255,255,255,0.38)" strokeWidth="1.2" fill="none" />
+                    {/* Stem */}
+                    <line x1="22" y1="90" x2="22" y2="155" stroke="url(#glass-stem)" strokeWidth="2.5" />
+                    {/* Base */}
+                    <ellipse cx="22" cy="155" rx="18" ry="4" fill="url(#glass-base)" stroke="rgba(255,255,255,0.18)" strokeWidth="0.8" />
+                  </g>
+                </svg>
               </div>
 
 
@@ -605,7 +759,7 @@ export default function Hero() {
               {/* BEAUTIFUL EMBELLISHMENT CURSIVE RIBBONS */}
               
               {/* Back Ribbon stream */}
-              <svg style={{ position: 'absolute', width: '220px', height: '220px', top: '22%', left: '-12%', zIndex: 3, pointerEvents: 'none' }} fill="none" viewBox="0 0 100 100">
+              <svg className="ribbon-back-anim" style={{ position: 'absolute', width: '220px', height: '220px', top: '22%', left: '-12%', zIndex: 3, pointerEvents: 'none' }} fill="none" viewBox="0 0 100 100">
                 <path d="M0,75 C25,90 15,35 45,45 C75,55 65,10 100,18" stroke="url(#ribbon-back-rose)" strokeWidth="1.2" strokeLinecap="round" />
                 <defs>
                   <linearGradient id="ribbon-back-rose" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -616,7 +770,7 @@ export default function Hero() {
               </svg>
 
               {/* Front Ribbon stream */}
-              <svg style={{ position: 'absolute', width: '250px', height: '250px', bottom: '-15%', right: '-12%', zIndex: 8, pointerEvents: 'none' }} fill="none" viewBox="0 0 100 100">
+              <svg className="ribbon-front-anim" style={{ position: 'absolute', width: '250px', height: '250px', bottom: '-15%', right: '-12%', zIndex: 8, pointerEvents: 'none' }} fill="none" viewBox="0 0 100 100">
                 <path d="M0,18 C35,8 25,75 55,55 C85,35 75,90 100,85" stroke="url(#ribbon-front-gold)" strokeWidth="1.2" strokeLinecap="round" />
                 <defs>
                   <linearGradient id="ribbon-front-gold" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -637,6 +791,34 @@ export default function Hero() {
                 <Sparkles size={16} color="#e5b3c0" className="sparkle-glow-fast" />
               </div>
 
+              {/* Floating Sparkles in the background */}
+              {heroSparklesData.map((sparkle, index) => (
+                <div
+                  key={`hero-sparkle-${index}`}
+                  className="hero-sparkle-star"
+                  style={{
+                    position: 'absolute',
+                    bottom: `${sparkle.bottom}%`,
+                    left: `${sparkle.left}%`,
+                    width: `${sparkle.size}px`,
+                    height: `${sparkle.size}px`,
+                    color: sparkle.color,
+                    opacity: 0,
+                    pointerEvents: 'none',
+                    animation: `float-sparkle ${sparkle.duration}s infinite linear`,
+                    animationDelay: `${sparkle.delay}s`,
+                    zIndex: index % 2 === 0 ? 2 : 5,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: `${sparkle.size + 4}px`,
+                    filter: `drop-shadow(0 0 4px ${sparkle.color})`
+                  }}
+                >
+                  ✦
+                </div>
+              ))}
+
               {/* Confetti Sparks (CSS shapes) */}
               <div className="spark-confetti" style={{ position: 'absolute', top: '40%', left: '2%', width: '6px', height: '6px', backgroundColor: '#dec39d', borderRadius: '50%', opacity: 0.6, animation: 'float-ball-1 9s infinite alternate' }} />
               <div className="spark-confetti" style={{ position: 'absolute', top: '20%', right: '4%', width: '4px', height: '4px', backgroundColor: '#e5b3c0', borderRadius: '50%', opacity: 0.7, animation: 'float-ball-2 11s infinite alternate' }} />
@@ -650,6 +832,22 @@ export default function Hero() {
 
       {/* Embedded Styles for animations specific to the visual luxury scene */}
       <style>{`
+        @keyframes logo-float {
+          0%, 100% { transform: translateY(0) scale(1); filter: drop-shadow(0 0 15px rgba(255, 190, 170, 0.45)) drop-shadow(0 0 30px rgba(214, 138, 160, 0.2)); }
+          50% { transform: translateY(-5px) scale(1.015); filter: drop-shadow(0 0 22px rgba(255, 190, 170, 0.6)) drop-shadow(0 0 40px rgba(214, 138, 160, 0.3)); }
+        }
+        .hero-logo-animated {
+          animation: logo-float 8s infinite ease-in-out;
+        }
+        @keyframes logo-aura-pulse {
+          0% { transform: scale(0.9) opacity: 0.7; }
+          100% { transform: scale(1.15) opacity: 1; }
+        }
+        @keyframes logo-sparkle-twinkle {
+          0%, 100% { opacity: 0.2; transform: scale(0.8) rotate(0deg); }
+          50% { opacity: 0.95; transform: scale(1.25) rotate(45deg); filter: drop-shadow(0 0 5px currentColor); }
+        }
+
         @keyframes bubble-up-anim {
           0% { transform: translateY(0) scale(0.6); opacity: 0; }
           10% { opacity: 0.8; }
@@ -657,16 +855,16 @@ export default function Hero() {
           100% { transform: translateY(-85px) scale(1.1); opacity: 0; }
         }
         @keyframes float-ball-1 {
-          0%, 100% { transform: translateY(0) rotate(-10deg); }
-          50% { transform: translateY(-10px) rotate(-8deg); }
+          0%, 100% { transform: translateY(0) rotate(-10deg) translateX(0) rotateY(0deg); }
+          50% { transform: translateY(-15px) rotate(-6deg) translateX(5px) rotateY(10deg); }
         }
         @keyframes float-ball-2 {
-          0%, 100% { transform: translateY(0) rotate(6deg); }
-          50% { transform: translateY(-14px) rotate(4deg); }
+          0%, 100% { transform: translateY(0) rotate(6deg) translateX(0) rotateY(0deg); }
+          50% { transform: translateY(-22px) rotate(2deg) translateX(-8px) rotateY(-12deg); }
         }
         @keyframes float-ball-3 {
-          0%, 100% { transform: translateY(0) rotate(15deg); }
-          50% { transform: translateY(-8px) rotate(17deg); }
+          0%, 100% { transform: translateY(0) rotate(15deg) translateX(0) rotateY(0deg); }
+          50% { transform: translateY(-12px) rotate(18deg) translateX(6px) rotateY(8deg); }
         }
         @keyframes spin {
           from { transform: rotate(0deg); }
@@ -682,6 +880,83 @@ export default function Hero() {
         @keyframes sparkle-glow-keyframes {
           0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.5; }
           50% { transform: scale(1.2) rotate(30deg); opacity: 1; filter: drop-shadow(0 0 8px rgba(222,195,157,0.7)); }
+        }
+
+        /* Ambient pulsing glow keyframe */
+        .champagne-ambient-glow {
+          animation: ambient-pulse 16s infinite alternate ease-in-out;
+        }
+        @keyframes ambient-pulse {
+          0% {
+            transform: scale(1) translate(0, 0);
+            opacity: 0.8;
+          }
+          50% {
+            transform: scale(1.15) translate(2%, 3%);
+            opacity: 1;
+            background: radial-gradient(circle, rgba(222, 195, 157, 0.25) 0%, rgba(200, 122, 144, 0.06) 65%, transparent 100%);
+          }
+          100% {
+            transform: scale(0.9) translate(-1%, -2%);
+            opacity: 0.7;
+          }
+        }
+
+        /* Floating Sparkles keyframe */
+        @keyframes float-sparkle {
+          0% {
+            transform: translateY(100px) rotate(0deg) scale(0.4);
+            opacity: 0;
+          }
+          20% {
+            opacity: 0.85;
+          }
+          80% {
+            opacity: 0.85;
+          }
+          100% {
+            transform: translateY(-400px) rotate(180deg) scale(1.2);
+            opacity: 0;
+          }
+        }
+
+        /* Ribbon swaying keyframes */
+        .ribbon-back-anim {
+          animation: ribbon-sway-back 12s infinite ease-in-out alternate;
+          transform-origin: top right;
+        }
+        .ribbon-front-anim {
+          animation: ribbon-sway-front 10s infinite ease-in-out alternate;
+          transform-origin: bottom left;
+        }
+        @keyframes ribbon-sway-back {
+          0% {
+            transform: rotate(0deg) scale(1) translateY(0);
+          }
+          50% {
+            transform: rotate(-4deg) scale(1.04) translateY(-6px);
+          }
+          100% {
+            transform: rotate(3deg) scale(0.97) translateY(4px);
+          }
+        }
+        @keyframes ribbon-sway-front {
+          0% {
+            transform: rotate(0deg) scale(1) translateY(0);
+          }
+          50% {
+            transform: rotate(5deg) scale(1.02) translateY(6px);
+          }
+          100% {
+            transform: rotate(-3deg) scale(0.95) translateY(-5px);
+          }
+        }
+
+        /* Responsive styling for branding elements */
+        @media (max-width: 480px) {
+          .branding-divider {
+            display: none !important;
+          }
         }
 
         /* Drifting Gold Confetti Keyframes */
@@ -721,13 +996,17 @@ export default function Hero() {
           100% { left: 150%; }
         }
 
-        .scene-gift-box {
+        @keyframes float-particle-card {
+          0%, 100% { transform: translateY(0) scale(1) rotate(0deg); opacity: 0.4; }
+          50% { transform: translateY(-10px) scale(1.15) rotate(15deg); opacity: 0.95; }
+        }
+
+        .scene-champagne-composition {
           transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
-        .scene-gift-box:hover {
-          transform: rotate(-9deg) scale(1.06) translateY(-5px) !important;
-          box-shadow: 0 30px 65px rgba(0,0,0,0.85) !important;
-          border-color: rgba(222, 195, 157, 0.4) !important;
+        .luxury-scene-wrapper:hover .scene-champagne-composition {
+          transform: translateY(-8px) rotate(-2deg) scale(1.05) !important;
+          filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5));
         }
 
         .scene-champagne-glass {
@@ -760,15 +1039,15 @@ export default function Hero() {
         /* Interactive Balloon sways on hover */
         @keyframes float-ball-1-sway {
           0%, 100% { transform: translateY(0) rotate(-10deg) translateX(0); }
-          50% { transform: translateY(-16px) rotate(-6deg) translateX(-10px); }
+          50% { transform: translateY(-20px) rotate(-4deg) translateX(-12px); }
         }
         @keyframes float-ball-2-sway {
           0%, 100% { transform: translateY(0) rotate(6deg) translateX(0); }
-          50% { transform: translateY(-20px) rotate(2deg) translateX(12px); }
+          50% { transform: translateY(-28px) rotate(0deg) translateX(15px); }
         }
         @keyframes float-ball-3-sway {
           0%, 100% { transform: translateY(0) rotate(15deg) translateX(0); }
-          50% { transform: translateY(-14px) rotate(20deg) translateX(-8px); }
+          50% { transform: translateY(-18px) rotate(22deg) translateX(-10px); }
         }
 
         .luxury-scene-wrapper:hover .balloon-gold {

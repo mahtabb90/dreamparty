@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
-import logoImg from '../assets/dreamparty-logo.png';
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -35,48 +34,67 @@ export default function Header() {
         left: 0,
         right: 0,
         zIndex: 100,
-        transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-        background: isScrolled ? 'rgba(5, 5, 8, 0.75)' : 'transparent',
-        backdropFilter: isScrolled ? 'blur(20px)' : 'none',
-        WebkitBackdropFilter: isScrolled ? 'blur(20px)' : 'none',
-        borderBottom: isScrolled ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid transparent',
-        padding: isScrolled ? '0.8rem 0' : '1.5rem 0',
+        transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+        height: isScrolled ? '70px' : '82px',
+        display: 'flex',
+        alignItems: 'center',
+        background: isScrolled 
+          ? 'linear-gradient(180deg, #160a0e 0%, #15090d 100%)' 
+          : 'linear-gradient(180deg, rgba(22, 10, 14, 0.96) 0%, rgba(22, 10, 14, 0.96) 100%)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
       }}
     >
-      <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        {/* Logo */}
-        <a
-          href="#"
-          onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            textDecoration: 'none',
-          }}
-        >
-          <img 
-            src={logoImg} 
-            alt="DreamParty Logo" 
+      <div 
+        className="container" 
+        style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          width: '100%',
+          paddingLeft: '2.5rem',
+          paddingRight: '2.5rem',
+          maxWidth: '1440px',
+          position: 'relative'
+        }}
+      >
+        {/* Left Column: Brand Live Text only */}
+        <div style={{ flex: '1 1 0%', minWidth: '200px', display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
+          <a
+            href="#"
+            onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
             style={{
-              height: 'clamp(40px, 4.5vh, 48px)',
-              width: 'auto',
-              objectFit: 'contain',
-              filter: 'drop-shadow(0 0 12px rgba(200, 122, 144, 0.6))',
-              display: 'block'
-            }} 
-          />
-        </a>
+              display: 'flex',
+              alignItems: 'center',
+              textDecoration: 'none',
+            }}
+          >
+            {/* Live Text "DreamParty" */}
+            <span style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: '22px',
+              fontWeight: 700,
+              background: 'linear-gradient(135deg, #dec39d 0%, #c87a90 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              letterSpacing: '-0.02em',
+              lineHeight: 1
+            }}>
+              DreamParty
+            </span>
+          </a>
+        </div>
 
-        {/* Desktop Nav Links */}
-        <nav style={{ display: 'none', gap: '2rem', alignItems: 'center' }} className="desktop-nav">
+        {/* Center Column: Navigation Links */}
+        <nav style={{ display: 'none', gap: 'clamp(1rem, 2vw, 2rem)', alignItems: 'center', justifyContent: 'center' }} className="desktop-nav">
           <a href="#features" onClick={(e) => { e.preventDefault(); scrollToSection('features'); }} className="nav-link">The Atelier</a>
           <a href="#how-it-works" onClick={(e) => { e.preventDefault(); scrollToSection('how-it-works'); }} className="nav-link">Our Process</a>
           <a href="#planner" onClick={(e) => { e.preventDefault(); scrollToSection('planner'); }} className="nav-link">Celebration Studio</a>
           <a href="#showcase" onClick={(e) => { e.preventDefault(); scrollToSection('showcase'); }} className="nav-link">Design Gallery</a>
         </nav>
 
-        {/* Desktop CTA */}
-        <div style={{ display: 'none', alignItems: 'center' }} className="desktop-nav">
+        {/* Right Column: CTA */}
+        <div style={{ display: 'none', flex: '1 1 0%', minWidth: '200px', justifyContent: 'flex-end', alignItems: 'center' }} className="desktop-nav">
           <button 
             onClick={() => scrollToSection('planner')}
             className="btn btn-secondary" 
@@ -101,6 +119,19 @@ export default function Header() {
           {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
+
+      {/* Luxury Gradient Divider */}
+      <div 
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: '1px',
+          background: 'linear-gradient(90deg, transparent, rgba(200, 122, 144, 0.35) 20%, rgba(222, 195, 157, 0.45) 50%, rgba(200, 122, 144, 0.35) 80%, transparent)',
+          zIndex: 10
+        }}
+      />
 
       {/* Mobile Drawer */}
       {isMobileMenuOpen && (
@@ -150,7 +181,8 @@ export default function Header() {
           color: #94a3b8;
           font-family: var(--font-display);
           font-weight: 500;
-          font-size: 0.95rem;
+          font-size: 1.08rem;
+          letter-spacing: 0.5px;
           text-decoration: none;
           transition: color 0.2s ease;
           position: relative;
