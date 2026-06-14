@@ -27,23 +27,23 @@ export default function Showcase() {
       vibe: 'Under the stars, we dance until dawn',
       date: 'Friday, Nov 15th • 8:00 PM',
       venue: 'The Stellar Pavilion, LA',
-      bgGradient: 'linear-gradient(135deg, #090915 0%, #1e1b4b 50%, #311042 100%)',
-      accentColor: '#c084fc',
-      titleColor: '#e9d5ff',
-      fontFamily: "'Outfit', sans-serif"
+      bgGradient: 'linear-gradient(135deg, #09090b 0%, #1c1215 50%, #2e171d 100%)',
+      accentColor: '#c87a90',
+      titleColor: '#e5b3c0',
+      fontFamily: 'var(--font-serif)'
     },
     {
       id: 'template-2',
       themeId: 'cyberpunk',
       name: 'KAI',
       age: '21',
-      vibe: 'Retro grids, lasers, and cyber synth beats',
+      vibe: 'Rose gold grids, warm lights and copper glows',
       date: 'Saturday, Dec 21st • 10:00 PM',
       venue: 'Pixel Arcade Loft, SF',
-      bgGradient: 'linear-gradient(135deg, #020617 0%, #0f172a 100%)',
-      accentColor: '#06b6d4',
-      titleColor: '#22d3ee',
-      fontFamily: 'monospace'
+      bgGradient: 'linear-gradient(135deg, #120e10 0%, #2b1c20 100%)',
+      accentColor: '#dec39d',
+      titleColor: '#ffffff',
+      fontFamily: 'var(--font-display)'
     },
     {
       id: 'template-3',
@@ -53,23 +53,23 @@ export default function Showcase() {
       vibe: 'Champagne towers & black tie gala',
       date: 'Saturday, Sep 7th • 7:00 PM',
       venue: 'The Ritz Ballroom, NYC',
-      bgGradient: 'linear-gradient(135deg, #0f172a 0%, #1c1917 100%)',
-      accentColor: '#f59e0b',
-      titleColor: '#fbbf24',
-      fontFamily: 'serif'
+      bgGradient: 'linear-gradient(135deg, #0f0e0f 0%, #221c17 100%)',
+      accentColor: '#e2c499',
+      titleColor: '#dfc9a5',
+      fontFamily: 'var(--font-serif)'
     },
     {
       id: 'template-4',
       themeId: 'sunset',
       name: 'MILA',
       age: '22',
-      vibe: 'Warm summer twilight & acoustic guitar vibes',
+      vibe: 'Warm summer twilight & rose acoustic guitar vibes',
       date: 'Friday, Jun 28th • 6:30 PM',
       venue: 'Highland Beach Cove, Miami',
-      bgGradient: 'linear-gradient(135deg, #2e1022 0%, #701a34 50%, #991b1b 100%)',
-      accentColor: '#f43f5e',
-      titleColor: '#fda4af',
-      fontFamily: "'Outfit', sans-serif"
+      bgGradient: 'linear-gradient(135deg, #26161a 0%, #4a212a 50%, #632c38 100%)',
+      accentColor: '#c87a90',
+      titleColor: '#e5b3c0',
+      fontFamily: 'var(--font-display)'
     }
   ];
 
@@ -101,7 +101,36 @@ export default function Showcase() {
   };
 
   return (
-    <section id="showcase" className="section" style={{ position: 'relative' }}>
+    <section id="showcase" className="section" style={{ position: 'relative', overflow: 'hidden' }}>
+      
+      {/* Ambient glow areas */}
+      <div 
+        style={{
+          position: 'absolute',
+          top: '20%',
+          right: '-10%',
+          width: '500px',
+          height: '500px',
+          background: 'radial-gradient(circle, rgba(229, 179, 192, 0.08) 0%, transparent 70%)',
+          filter: 'blur(95px)',
+          zIndex: -1,
+          pointerEvents: 'none'
+        }}
+      />
+      <div 
+        style={{
+          position: 'absolute',
+          bottom: '5%',
+          left: '-5%',
+          width: '450px',
+          height: '450px',
+          background: 'radial-gradient(circle, rgba(222, 195, 157, 0.06) 0%, transparent 70%)',
+          filter: 'blur(90px)',
+          zIndex: -1,
+          pointerEvents: 'none'
+        }}
+      />
+
       <div className="container">
         
         {/* Title */}
@@ -151,9 +180,9 @@ export default function Showcase() {
                 <p style={{ textTransform: 'uppercase', letterSpacing: '0.15em', fontSize: '0.7rem', color: template.accentColor, fontWeight: 700 }}>You're Invited</p>
                 
                 <div>
-                  <h4 style={{ fontSize: '1.35rem', letterSpacing: '0.05em', color: template.titleColor }}>{template.name}</h4>
+                  <h4 style={{ fontSize: '1.45rem', letterSpacing: '0.05em', color: template.titleColor, fontFamily: template.fontFamily, fontStyle: template.fontFamily === 'var(--font-serif)' ? 'italic' : 'normal', fontWeight: template.fontFamily === 'var(--font-serif)' ? 500 : 700 }}>{template.name}</h4>
                   <p style={{ fontSize: '0.7rem', textTransform: 'uppercase', opacity: 0.6, margin: '0.2rem 0' }}>Celebrating Their</p>
-                  <h2 style={{ fontSize: '3.2rem', fontWeight: 900, color: '#fff', lineHeight: 1, letterSpacing: '-0.02em' }}>
+                  <h2 style={{ fontSize: '3.2rem', fontWeight: 900, color: '#fff', lineHeight: 1, letterSpacing: '-0.02em', fontFamily: template.fontFamily === 'var(--font-serif)' ? 'var(--font-serif)' : 'var(--font-display)' }}>
                     {template.age}
                     <span style={{ fontSize: '1.3rem', verticalAlign: 'super', fontWeight: 700 }}>th</span>
                   </h2>
@@ -201,9 +230,9 @@ export default function Showcase() {
                   width: '44px',
                   height: '44px',
                   borderRadius: '50%',
-                  background: 'rgba(139, 92, 246, 0.15)',
-                  border: '1px solid rgba(139, 92, 246, 0.3)',
-                  color: '#c084fc',
+                  background: 'rgba(200, 122, 144, 0.15)',
+                  border: '1px solid rgba(200, 122, 144, 0.3)',
+                  color: '#e5b3c0',
                   marginBottom: '0.5rem'
                 }}>
                   <Sparkles size={20} />

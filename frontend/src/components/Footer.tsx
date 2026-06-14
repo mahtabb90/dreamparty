@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
-import { Sparkles, Send } from 'lucide-react';
+import { Send } from 'lucide-react';
+import logoImg from '../assets/dreamparty-logo.png';
 
 export default function Footer() {
   const [email, setEmail] = useState('');
@@ -34,18 +35,20 @@ export default function Footer() {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.6rem',
                 textDecoration: 'none',
-                fontSize: '1.4rem',
-                fontWeight: 800,
-                fontFamily: 'var(--font-display)',
-                background: 'linear-gradient(135deg, #fff 0%, #a78bfa 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
               }}
             >
-              <Sparkles size={20} color="#8b5cf6" style={{ filter: 'drop-shadow(0 0 6px rgba(139, 92, 246, 0.6))' }} />
-              <span>DreamParty</span>
+              <img 
+                src={logoImg} 
+                alt="DreamParty Logo" 
+                style={{
+                  height: '42px',
+                  width: 'auto',
+                  objectFit: 'contain',
+                  filter: 'drop-shadow(0 0 8px rgba(200, 122, 144, 0.55))',
+                  display: 'block'
+                }} 
+              />
             </a>
             <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: '1.6', maxWidth: '300px' }}>
               Create unforgettable celebrations. Beautifully bespoke templates, stellar themes, zodiac matching, and customized recommendations.
@@ -64,9 +67,9 @@ export default function Footer() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <h5 style={{ fontSize: '0.9rem', color: '#fff', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>Explore</h5>
               <ul style={{ listStyleType: 'none', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                <li><a href="#features" className="footer-link">Features</a></li>
-                <li><a href="#how-it-works" className="footer-link">How It Works</a></li>
-                <li><a href="#planner" className="footer-link">Planner Workshop</a></li>
+                <li><a href="#features" className="footer-link">The Atelier</a></li>
+                <li><a href="#how-it-works" className="footer-link">Our Process</a></li>
+                <li><a href="#planner" className="footer-link">Celebration Studio</a></li>
                 <li><a href="#showcase" className="footer-link">Design Gallery</a></li>
               </ul>
             </div>
@@ -180,8 +183,8 @@ export default function Footer() {
           text-decoration: none;
         }
         .social-icon-btn:hover {
-          background: rgba(139, 92, 246, 0.1);
-          border-color: rgba(139, 92, 246, 0.3);
+          background: rgba(200, 122, 144, 0.1);
+          border-color: rgba(200, 122, 144, 0.3);
           color: white;
           transform: translateY(-2px);
         }

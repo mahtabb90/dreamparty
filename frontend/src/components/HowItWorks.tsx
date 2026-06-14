@@ -4,25 +4,25 @@ export default function HowItWorks() {
   const steps = [
     {
       num: '01',
-      icon: <Calendar size={20} color="#8b5cf6" />,
+      icon: <Calendar size={20} color="#c87a90" />,
       title: 'Enter Birthday Details',
       description: 'Input your name, age, and date. Our system begins matching details immediately to align with your personal vibe and stars.'
     },
     {
       num: '02',
-      icon: <Search size={20} color="#ec4899" />,
+      icon: <Search size={20} color="#dec39d" />,
       title: 'Discover Theme Vibes',
       description: 'Explore visual mood boards, copy curated color palettes, and match themes directly linked with your cosmic zodiac sign.'
     },
     {
       num: '03',
-      icon: <Lightbulb size={20} color="#06b6d4" />,
+      icon: <Lightbulb size={20} color="#e5b3c0" />,
       title: 'Generate Party Ideas',
       description: 'Describe details to the custom AI recommendation engine to formulate specific food menus, drink pairings, and sound playlists.'
     },
     {
       num: '04',
-      icon: <PartyPopper size={20} color="#eab308" />,
+      icon: <PartyPopper size={20} color="#dfc9a5" />,
       title: 'Create Perfect Parties',
       description: 'Customize and download your stellar invitation template, track tasks on your dynamic checklist, and host the perfect event.'
     }
@@ -40,7 +40,7 @@ export default function HowItWorks() {
           transform: 'translate(-50%, -50%)',
           width: '600px',
           height: '600px',
-          background: 'radial-gradient(circle, rgba(139, 92, 246, 0.04) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(222, 195, 157, 0.04) 0%, transparent 70%)',
           filter: 'blur(50px)',
           zIndex: -1,
           pointerEvents: 'none'
@@ -93,7 +93,7 @@ export default function HowItWorks() {
                       borderRadius: '50%',
                       background: 'rgba(5, 5, 8, 0.85)',
                       border: '1px solid rgba(255, 255, 255, 0.08)',
-                      boxShadow: '0 0 20px rgba(139, 92, 246, 0.1)',
+                      boxShadow: '0 0 20px rgba(222, 195, 157, 0.15)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -152,13 +152,13 @@ export default function HowItWorks() {
           left: 10%;
           right: 10%;
           height: 1px;
-          background: linear-gradient(to right, transparent, rgba(139,92,246,0.3) 15%, rgba(236,72,153,0.3) 50%, rgba(6,182,212,0.3) 85%, transparent);
+          background: linear-gradient(to right, transparent, rgba(200,122,144,0.3) 15%, rgba(222,195,157,0.3) 50%, rgba(229,179,192,0.3) 85%, transparent);
           z-index: 1;
         }
         .step-card:hover .step-badge {
           transform: scale(1.1);
           border-color: var(--color-primary);
-          box-shadow: 0 0 25px rgba(139, 92, 246, 0.4);
+          box-shadow: 0 0 25px rgba(222, 195, 157, 0.45);
           color: var(--color-primary);
         }
         

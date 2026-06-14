@@ -2,14 +2,16 @@ import React from 'react';
 import { Mail, Palette, Moon, ClipboardList, Wand2, ArrowRight } from 'lucide-react';
 
 interface FeatureCardProps {
+  serviceNo: string;
   icon: React.ReactNode;
   title: string;
   description: string;
   tabKey: string;
   glowColor: string;
+  ctaLabel: string;
 }
 
-function FeatureCard({ icon, title, description, tabKey, glowColor }: FeatureCardProps) {
+function FeatureCard({ serviceNo, icon, title, description, tabKey, glowColor, ctaLabel }: FeatureCardProps) {
   const handleCardClick = () => {
     // Scroll to the planner section
     const plannerSec = document.getElementById('planner');
@@ -30,64 +32,105 @@ function FeatureCard({ icon, title, description, tabKey, glowColor }: FeatureCar
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-start',
-        gap: '1.25rem',
+        gap: '1rem',
         height: '100%',
-        padding: '2.25rem 2rem',
-        border: '1px solid rgba(255, 255, 255, 0.06)'
+        padding: '2.5rem 2rem',
+        border: '1px solid rgba(222, 195, 157, 0.1)', /* Gold tinted border */
+        boxShadow: '0 15px 35px rgba(0,0,0,0.4)'
       }}
     >
-      {/* Icon Container with subtle radial glow */}
-      <div 
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: '54px',
-          height: '54px',
-          borderRadius: '14px',
-          backgroundColor: 'rgba(255, 255, 255, 0.03)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          boxShadow: `0 0 20px ${glowColor}`,
-          color: 'white',
-          transition: 'all 0.3s ease',
-        }}
-        className="icon-box"
-      >
-        {icon}
+      {/* Top Row: Service Number and Icon */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '0.25rem' }}>
+        <span style={{ 
+          fontSize: '0.7rem', 
+          color: '#dec39d', 
+          fontFamily: 'var(--font-display)', 
+          fontWeight: 700, 
+          letterSpacing: '0.15em', 
+          textTransform: 'uppercase',
+          opacity: 0.95
+        }}>
+          {serviceNo}
+        </span>
+        
+        {/* Icon Container with radial glow */}
+        <div 
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '46px',
+            height: '46px',
+            borderRadius: '12px',
+            backgroundColor: 'rgba(255, 255, 255, 0.02)',
+            border: '1px solid rgba(222, 195, 157, 0.15)',
+            boxShadow: `0 0 15px ${glowColor}`,
+            color: 'white',
+            transition: 'all 0.3s ease',
+          }}
+          className="icon-box"
+        >
+          {icon}
+        </div>
       </div>
 
+      {/* Elegant line separator */}
+      <div style={{ width: '40px', height: '1px', backgroundColor: 'rgba(222, 195, 157, 0.25)', margin: '0.2rem 0' }} />
+
+      {/* Title & Description */}
       <div>
-        <h3 style={{ fontSize: '1.3rem', marginBottom: '0.6rem', fontWeight: 600 }}>{title}</h3>
-        <p style={{ fontSize: '0.92rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>{description}</p>
+        <h3 style={{ 
+          fontSize: '1.4rem', 
+          fontFamily: 'var(--font-serif)', 
+          fontStyle: 'italic', 
+          fontWeight: 500, 
+          color: '#fff', 
+          marginBottom: '0.6rem',
+          letterSpacing: '0.02em'
+        }}>
+          {title}
+        </h3>
+        <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: '1.6' }}>
+          {description}
+        </p>
       </div>
 
+      {/* Elegant CTA Link */}
       <div 
         style={{ 
           marginTop: 'auto', 
           display: 'flex', 
           alignItems: 'center', 
           gap: '0.4rem', 
-          fontSize: '0.85rem', 
+          fontSize: '0.8rem', 
           fontWeight: 600, 
           color: 'var(--color-primary)',
-          opacity: 0.8,
+          letterSpacing: '0.05em',
+          textTransform: 'uppercase',
+          fontFamily: 'var(--font-display)',
+          opacity: 0.85,
           transition: 'transform 0.3s ease'
         }}
         className="arrow-link"
       >
-        <span>Open Creator</span>
-        <ArrowRight size={14} />
+        <span>{ctaLabel}</span>
+        <ArrowRight size={13} />
       </div>
 
       <style>{`
+        .feature-card-item:hover {
+          border-color: rgba(222, 195, 157, 0.35) !important;
+          box-shadow: 0 20px 45px rgba(200, 122, 144, 0.12) !important;
+        }
         .feature-card-item:hover .icon-box {
-          transform: scale(1.1) rotate(4deg);
-          border-color: rgba(255, 255, 255, 0.2);
-          box-shadow: 0 0 30px ${glowColor};
+          transform: scale(1.08) rotate(4deg);
+          border-color: rgba(222, 195, 157, 0.45);
+          box-shadow: 0 0 25px ${glowColor};
         }
         .feature-card-item:hover .arrow-link {
           transform: translateX(4px);
-          opacity: 1;
+          opacity: 1 !important;
+          color: #fff !important;
         }
       `}</style>
     </div>
@@ -97,53 +140,92 @@ function FeatureCard({ icon, title, description, tabKey, glowColor }: FeatureCar
 export default function Features() {
   const features = [
     {
-      icon: <Mail size={24} color="#8b5cf6" />,
-      title: 'Invitation Creator',
-      description: 'Design gorgeous, interactive digital birthday invitations. Customize layouts, colors, and typography instantly.',
+      serviceNo: 'Service No. 01',
+      icon: <Mail size={20} color="#c87a90" />,
+      title: 'Invitation Atelier',
+      description: 'Our bespoke digital stationery salon. Craft custom invitation suites styled with gold-press details, letterpress cardstock, and elegant typography.',
       tabKey: 'invitation',
-      glowColor: 'rgba(139, 92, 246, 0.25)',
+      glowColor: 'rgba(200, 122, 144, 0.2)',
+      ctaLabel: 'Enter Atelier'
     },
     {
-      icon: <Palette size={24} color="#ec4899" />,
-      title: 'Theme Generator',
-      description: 'Explore high-end curated aesthetic themes (Retro Wave, Cyberpunk, Boho, Forest) with cohesive color palettes.',
+      serviceNo: 'Service No. 02',
+      icon: <Palette size={20} color="#dec39d" />,
+      title: 'Theme Curator',
+      description: 'Aesthetic mood board direction. Explore hand-tailored color stories, velvet textures, and floral layouts curated by boutique designers.',
       tabKey: 'theme',
-      glowColor: 'rgba(236, 72, 153, 0.25)',
+      glowColor: 'rgba(222, 195, 157, 0.2)',
+      ctaLabel: 'Curate Aesthetics'
     },
     {
-      icon: <Moon size={24} color="#06b6d4" />,
-      title: 'Zodiac Inspiration',
-      description: 'Uncover theme proposals aligned with your stars. Enter birthday dates to get celestial party vibes.',
+      serviceNo: 'Service No. 03',
+      icon: <Moon size={20} color="#e5b3c0" />,
+      title: 'Celestial Inspiration',
+      description: 'Astrological alignment concepts. Coordinate planetary colors, signature party vibes, and themes matching your zodiac signature.',
       tabKey: 'zodiac',
-      glowColor: 'rgba(6, 182, 212, 0.25)',
+      glowColor: 'rgba(229, 179, 192, 0.2)',
+      ctaLabel: 'Align Stars'
     },
     {
-      icon: <ClipboardList size={24} color="#eab308" />,
-      title: 'Party Planner',
-      description: 'Stay organized with an interactive, checklist planner designed to map your steps from theme selection to party night.',
+      serviceNo: 'Service No. 04',
+      icon: <ClipboardList size={20} color="#dfc9a5" />,
+      title: 'Celebration Planner',
+      description: 'Bespoke event itinerary. Map essential prep milestones, design guest timelines, and orchestrate champagne pairings in a digital journal.',
       tabKey: 'planner',
-      glowColor: 'rgba(234, 179, 8, 0.25)',
+      glowColor: 'rgba(223, 201, 165, 0.2)',
+      ctaLabel: 'Open Journal'
     },
     {
-      icon: <Wand2 size={24} color="#10b981" />,
-      title: 'AI Recommendations',
-      description: 'Describe your dream celebration in natural language and watch the AI assemble custom concepts, menus, and guides.',
+      serviceNo: 'Service No. 05',
+      icon: <Wand2 size={20} color="#aa5b71" />,
+      title: 'Party Magic',
+      description: 'Concierge recommendation engine. Describe your dream soirée in natural language and allow the virtual butler to compile custom menus.',
       tabKey: 'ai',
-      glowColor: 'rgba(16, 185, 129, 0.25)',
+      glowColor: 'rgba(170, 91, 113, 0.2)',
+      ctaLabel: 'Consult Concierge'
     },
   ];
 
   return (
-    <section id="features" className="section" style={{ position: 'relative' }}>
+    <section id="features" className="section" style={{ position: 'relative', overflow: 'hidden' }}>
+      
+      {/* Ambient glow areas */}
+      <div 
+        style={{
+          position: 'absolute',
+          top: '25%',
+          left: '-10%',
+          width: '500px',
+          height: '500px',
+          background: 'radial-gradient(circle, rgba(200, 122, 144, 0.08) 0%, transparent 70%)',
+          filter: 'blur(90px)',
+          zIndex: -1,
+          pointerEvents: 'none'
+        }}
+      />
+      <div 
+        style={{
+          position: 'absolute',
+          bottom: '10%',
+          right: '-5%',
+          width: '450px',
+          height: '450px',
+          background: 'radial-gradient(circle, rgba(222, 195, 157, 0.06) 0%, transparent 70%)',
+          filter: 'blur(85px)',
+          zIndex: -1,
+          pointerEvents: 'none'
+        }}
+      />
+
       <div className="container">
         
         {/* Section Header */}
-        <div style={{ textAlign: 'center', marginBottom: '4rem', display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
+        <div style={{ textAlign: 'center', marginBottom: '4.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
           <h2 style={{ fontSize: 'clamp(2rem, 3.5vw, 3rem)', fontWeight: 800 }}>
             Everything You Need to <span className="text-gradient-magic">Celebrate</span>
           </h2>
           <p style={{ maxWidth: '600px', color: 'var(--text-muted)', fontSize: '1.05rem', lineHeight: '1.6' }}>
-            Elevate your celebration from standard to legendary. Explore our premium features, designed to make birthday planning delightful and effortless.
+            Elevate your celebration from standard to legendary. Explore our boutique design services, customized to make event curation effortless and exquisite.
           </p>
         </div>
 
@@ -152,11 +234,13 @@ export default function Features() {
           {features.map((feat, index) => (
             <div key={index} className={`animate-fade-in delay-${(index + 1) * 100}`} style={{ height: '100%' }}>
               <FeatureCard
+                serviceNo={feat.serviceNo}
                 icon={feat.icon}
                 title={feat.title}
                 description={feat.description}
                 tabKey={feat.tabKey}
                 glowColor={feat.glowColor}
+                ctaLabel={feat.ctaLabel}
               />
             </div>
           ))}
@@ -168,7 +252,7 @@ export default function Features() {
         .features-grid {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-          gap: 2rem;
+          gap: 2.25rem;
         }
         @media (max-width: 480px) {
           .features-grid {

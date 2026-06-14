@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Sparkles, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
+import logoImg from '../assets/dreamparty-logo.png';
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -50,26 +51,28 @@ export default function Header() {
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '0.6rem',
             textDecoration: 'none',
-            fontSize: '1.5rem',
-            fontWeight: 800,
-            fontFamily: 'var(--font-display)',
-            background: 'linear-gradient(135deg, #fff 0%, #a78bfa 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
           }}
         >
-          <Sparkles size={24} color="#8b5cf6" style={{ filter: 'drop-shadow(0 0 8px rgba(139, 92, 246, 0.6))' }} />
-          <span>DreamParty</span>
+          <img 
+            src={logoImg} 
+            alt="DreamParty Logo" 
+            style={{
+              height: 'clamp(40px, 4.5vh, 48px)',
+              width: 'auto',
+              objectFit: 'contain',
+              filter: 'drop-shadow(0 0 12px rgba(200, 122, 144, 0.6))',
+              display: 'block'
+            }} 
+          />
         </a>
 
         {/* Desktop Nav Links */}
         <nav style={{ display: 'none', gap: '2rem', alignItems: 'center' }} className="desktop-nav">
-          <a href="#features" onClick={(e) => { e.preventDefault(); scrollToSection('features'); }} className="nav-link">Features</a>
-          <a href="#how-it-works" onClick={(e) => { e.preventDefault(); scrollToSection('how-it-works'); }} className="nav-link">How It Works</a>
-          <a href="#planner" onClick={(e) => { e.preventDefault(); scrollToSection('planner'); }} className="nav-link">Planner Suite</a>
-          <a href="#showcase" onClick={(e) => { e.preventDefault(); scrollToSection('showcase'); }} className="nav-link">Showcase</a>
+          <a href="#features" onClick={(e) => { e.preventDefault(); scrollToSection('features'); }} className="nav-link">The Atelier</a>
+          <a href="#how-it-works" onClick={(e) => { e.preventDefault(); scrollToSection('how-it-works'); }} className="nav-link">Our Process</a>
+          <a href="#planner" onClick={(e) => { e.preventDefault(); scrollToSection('planner'); }} className="nav-link">Celebration Studio</a>
+          <a href="#showcase" onClick={(e) => { e.preventDefault(); scrollToSection('showcase'); }} className="nav-link">Design Gallery</a>
         </nav>
 
         {/* Desktop CTA */}
@@ -119,10 +122,10 @@ export default function Header() {
             zIndex: 99,
           }}
         >
-          <a href="#features" onClick={(e) => { e.preventDefault(); scrollToSection('features'); }} className="nav-link-mobile">Features</a>
-          <a href="#how-it-works" onClick={(e) => { e.preventDefault(); scrollToSection('how-it-works'); }} className="nav-link-mobile">How It Works</a>
-          <a href="#planner" onClick={(e) => { e.preventDefault(); scrollToSection('planner'); }} className="nav-link-mobile">Planner Suite</a>
-          <a href="#showcase" onClick={(e) => { e.preventDefault(); scrollToSection('showcase'); }} className="nav-link-mobile">Showcase</a>
+          <a href="#features" onClick={(e) => { e.preventDefault(); scrollToSection('features'); }} className="nav-link-mobile">The Atelier</a>
+          <a href="#how-it-works" onClick={(e) => { e.preventDefault(); scrollToSection('how-it-works'); }} className="nav-link-mobile">Our Process</a>
+          <a href="#planner" onClick={(e) => { e.preventDefault(); scrollToSection('planner'); }} className="nav-link-mobile">Celebration Studio</a>
+          <a href="#showcase" onClick={(e) => { e.preventDefault(); scrollToSection('showcase'); }} className="nav-link-mobile">Design Gallery</a>
           <button 
             onClick={() => scrollToSection('planner')}
             className="btn btn-primary"

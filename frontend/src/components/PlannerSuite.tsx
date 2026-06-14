@@ -1,48 +1,48 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, Palette, Moon, ClipboardList, Wand2, Plus, Trash2, CheckCircle2, Copy, Sparkles, Download, RefreshCw } from 'lucide-react';
+import { Wand2, Plus, Trash2, CheckCircle2, Copy, Sparkles, Download, RefreshCw } from 'lucide-react';
 
 // Theme Presets for Invitation Card
 const INVITATION_THEMES = [
   {
     id: 'midnight',
-    name: 'Midnight Cosmic',
-    bg: 'linear-gradient(135deg, #090915 0%, #1e1b4b 50%, #311042 100%)',
-    textColor: '#ffffff',
-    accentColor: '#c084fc',
-    titleColor: '#e9d5ff',
-    glowColor: 'rgba(167, 139, 250, 0.4)',
-    fontFamily: "'Outfit', sans-serif"
+    name: 'Midnight Velvet',
+    bg: 'linear-gradient(135deg, #09090b 0%, #1c1215 50%, #2e171d 100%)',
+    textColor: '#f3e8ee',
+    accentColor: '#c87a90',
+    titleColor: '#e5b3c0',
+    glowColor: 'rgba(200, 122, 144, 0.4)',
+    fontFamily: "var(--font-serif)"
   },
   {
     id: 'gold',
-    name: 'Royal Gold',
-    bg: 'linear-gradient(135deg, #0f172a 0%, #1c1917 100%)',
-    textColor: '#e2e8f0',
-    accentColor: '#f59e0b',
-    titleColor: '#fbbf24',
-    glowColor: 'rgba(245, 158, 11, 0.4)',
-    fontFamily: "'Playfair Display', Georgia, serif"
+    name: 'Champagne Elegance',
+    bg: 'linear-gradient(135deg, #0f0e0f 0%, #221c17 100%)',
+    textColor: '#dec39d',
+    accentColor: '#e2c499',
+    titleColor: '#dfc9a5',
+    glowColor: 'rgba(222, 195, 157, 0.35)',
+    fontFamily: "var(--font-serif)"
   },
   {
     id: 'cyberpunk',
-    name: 'Neon Cyberpunk',
-    bg: 'linear-gradient(135deg, #020617 0%, #0f172a 100%)',
-    textColor: '#e2e8f0',
-    accentColor: '#06b6d4',
-    titleColor: '#22d3ee',
-    glowColor: 'rgba(6, 182, 212, 0.5)',
-    fontFamily: "'Courier New', Courier, monospace",
-    border: '2px solid #06b6d4'
+    name: 'Romantic Blush',
+    bg: 'linear-gradient(135deg, #120e10 0%, #2b1c20 100%)',
+    textColor: '#e5b3c0',
+    accentColor: '#dec39d',
+    titleColor: '#ffffff',
+    glowColor: 'rgba(229, 179, 192, 0.4)',
+    fontFamily: "var(--font-display)",
+    border: '1px solid rgba(229, 179, 192, 0.2)'
   },
   {
     id: 'sunset',
-    name: 'Peach Sunset',
-    bg: 'linear-gradient(135deg, #2e1022 0%, #701a34 50%, #991b1b 100%)',
+    name: 'Rose Quartz',
+    bg: 'linear-gradient(135deg, #26161a 0%, #4a212a 50%, #632c38 100%)',
     textColor: '#fecdd3',
-    accentColor: '#f43f5e',
-    titleColor: '#fda4af',
-    glowColor: 'rgba(244, 63, 94, 0.4)',
-    fontFamily: "'Outfit', sans-serif"
+    accentColor: '#c87a90',
+    titleColor: '#e5b3c0',
+    glowColor: 'rgba(200, 122, 144, 0.4)',
+    fontFamily: "var(--font-display)"
   }
 ];
 
@@ -50,48 +50,48 @@ const INVITATION_THEMES = [
 const THEME_VIBES = [
   {
     id: 'cosmic',
-    name: 'Midnight Cosmic',
-    description: 'A stellar theme filled with dark celestial details, glowing ambient lights, and holographic table settings. Perfect for night owls and astronomy lovers.',
-    colors: ['#0b0d19', '#1e1b4b', '#8b5cf6', '#d946ef', '#fbbf24'],
-    colorNames: ['Deep Space', 'Midnight', 'Violet Nebula', 'Cosmic Pink', 'Starlight Gold'],
-    decor: ['Starry projector lights', 'Holographic table runners', 'Glow-in-the-dark cocktails', 'Galaxy cupcakes'],
-    music: 'Dreamy synthwave, ambient electronica, spacey lofi'
+    name: 'Rosewood Celestial',
+    description: 'A stellar theme filled with warm candle outlines, dark rosewood setups, and glowing blush constellations. Perfect for romantic night stargazers.',
+    colors: ['#0d080a', '#2d181e', '#c87a90', '#e5b3c0', '#dec39d'],
+    colorNames: ['Rosewood Dark', 'Deep Mauve', 'Dusty Rose', 'Warm Blush', 'Champagne Gold'],
+    decor: ['Rose gold candle arrays', 'Blush starry projection lights', 'Floating fairy lights', 'Champagne glassware'],
+    music: 'Dreamy acoustic lofi, ambient soft piano, cinematic instrumentals'
   },
   {
     id: 'neon',
-    name: 'Neon Retro 80s',
-    description: 'High energy, glowing neon accents, grid patterns, and retro synth beats. Transport your guests straight into a vintage arcade or synthwave paradise.',
-    colors: ['#0f051d', '#f72585', '#7209b7', '#3f37c9', '#4cc9f0'],
-    colorNames: ['Vapor Black', 'Hot Pink', 'Purple Grid', 'Laser Blue', 'Cyan Glow'],
-    decor: ['LED neon tube lights', 'Retro cassette placeholders', 'UV-reactive tableware', 'Arcade cabinets setup'],
-    music: '80s Synthwave, disco house, retro electronic beats'
+    name: 'Velvet Soirée',
+    description: 'Rich velvet textures, warm amber candle outlines, gold details, and sophisticated acoustic sets. Recreates a high-end luxury cocktail lounge.',
+    colors: ['#140b0d', '#421a24', '#a05c6e', '#dec39d', '#dfc9a5'],
+    colorNames: ['Velvet Shadow', 'Deep Crimson', 'Muted Rose', 'Champagne', 'Warm Brass'],
+    decor: ['Plush velvet curtains', 'Amber glowing lightbulbs', 'Brass bar cart setup', 'White rose garlands'],
+    music: 'Chic lounge jazz, smooth acoustic covers, soft bossa beats'
   },
   {
     id: 'boho',
-    name: 'Boho Dreamland',
-    description: 'Earthy tones, soft textiles, pampas grass, warm fairy lights, and intimate floor seating. Offers a relaxed, chic, and organic celebration vibe.',
-    colors: ['#fdf6e2', '#f5ebe0', '#e3d5ca', '#d5bdaf', '#a3b18a'],
-    colorNames: ['Sand Shell', 'Warm Cream', 'Toasted Taupe', 'Earth Clay', 'Sage Olive'],
-    decor: ['Pampas grass arrangements', 'Macrame backdrops', 'Rattan lanterns', 'Floor pillows and low tables'],
-    music: 'Acoustic indie folk, chill jazz, soft guitar instrumentals'
+    name: 'Champagne Garden',
+    description: 'Soft cream tones, rose gold highlights, champagne towers, and floor picnics. Sophisticated, organic, and relaxed.',
+    colors: ['#1a1714', '#3d2e24', '#dec39d', '#e5b3c0', '#fff8f2'],
+    colorNames: ['Toasted Oak', 'Shadow Ash', 'Champagne Gold', 'Warm Blush', 'Ivory Pearl'],
+    decor: ['Dried pampas cloud decorations', 'Rose gold fairy lights', 'Rattan candle boxes', 'Floor silk cushions'],
+    music: 'Acoustic indie folk, fingerstyle guitar covers, soft chill acoustic'
   },
   {
     id: 'cyber',
-    name: 'Cyberpunk Rave',
-    description: 'Dark obsidian backdrops, electric cyan and magenta lasers, techno aesthetics, and glitch effects. Highly futuristic and electronic.',
-    colors: ['#020205', '#00f0ff', '#ff007f', '#12003c', '#7fffd4'],
-    colorNames: ['Null Black', 'Cyber Cyan', 'Glitch Pink', 'Grid Violet', 'Matrix Mint'],
-    decor: ['Holographic banners', 'Laser projector setups', 'Cyberpunk eyewear for guests', 'LED light cocktails'],
-    music: 'Cyberpunk industrial, techno, deep minimal house'
+    name: 'Blush Silhouette',
+    description: 'A minimal modern layout focusing on warm white glows, metallic brass accents, and glassmorphic designs. Highly artistic and creative.',
+    colors: ['#0c0a0b', '#362227', '#c87a90', '#e5b3c0', '#dec39d'],
+    colorNames: ['Obsidian Black', 'Burgundy Accent', 'Dusty Rose', 'Warm Blush', 'Champagne Gold'],
+    decor: ['Blush LED custom backdrop', 'Holographic card placements', 'Blush silk ribbons', 'Glass candle holders'],
+    music: 'Chill electronic, vocal organic house, soft synthesizer beats'
   },
   {
     id: 'garden',
-    name: 'Enchanted Forest',
-    description: 'Lush greenery, hanging ivy, magical fairy lights, wood accents, and warm botanical vibes. Feels like walking into a fairy tale.',
-    colors: ['#02120b', '#064e3b', '#10b981', '#fbbf24', '#fef3c7'],
-    colorNames: ['Shadow Green', 'Pine Green', 'Emerald Ivy', 'Warm Amber', 'Petal Cream'],
-    decor: ['Hanging ivy and moss', 'Micro fairy light arrays', 'Wood log platters', 'Fresh botanical garlands'],
-    music: 'Classical fantasy tracks, acoustic ambient, soft acoustic covers'
+    name: 'Gilded Greenhouse',
+    description: 'Lush greenery, hanging ivy, magical fairy lights, wood accents, and warm botanical vibes. Feels like walking into a botanical wonderland.',
+    colors: ['#07140f', '#19382c', '#c87a90', '#dec39d', '#ffffff'],
+    colorNames: ['Greenhouse Ivy', 'Emerald Canopy', 'Dusty Rose Highlight', 'Champagne Sparkle', 'Pure White'],
+    decor: ['Hanging eucalyptus drapes', 'Rose gold birdcages', 'Brass table stands', 'Greenery centerpieces'],
+    music: 'Classical romantic strings, acoustic fantasy covers, soft ambient'
   }
 ];
 
@@ -120,88 +120,88 @@ const getZodiacDetails = (dateStr: string) => {
 
   const recommendations: Record<string, { theme: string; vibe: string; drink: string; activity: string; description: string }> = {
     Aries: {
-      theme: 'Adrenaline Neon Lasers',
-      vibe: 'High energy, vibrant pinks/cyans, electric atmosphere',
-      drink: 'Spicy Mezcal Margarita with a chili rim',
-      activity: 'Karaoke tournament or high-octane laser tag session',
-      description: 'As a passionate fire sign, your party needs to be dynamic, active, and filled with competitive fun.'
+      theme: 'Gilded Crimson Sparks',
+      vibe: 'Warm crimson lighting, champagne bubbles, glowing rose gold sparklers',
+      drink: 'Spiced Pomegranate Margarita with a golden sugar rim',
+      activity: 'Interactive wine tasting competition or custom trivia',
+      description: 'As a passionate fire sign, your party needs dynamic warmth, golden glow highlights, and engaging activities.'
     },
     Taurus: {
-      theme: 'Luxury Vineyard Picnic',
-      vibe: 'Earth tones, premium charcuterie, silk blankets, warm fairy lights',
-      drink: 'Aged Cabernet Sauvignon or a Lavender French 75',
-      activity: 'Artisan chocolate tasting or live acoustic lounge performance',
-      description: 'You love indulgence, comfort, and the finer things in life. A gourmet picnic feeds your earthy luxury soul.'
+      theme: 'Champagne Vineyard Picnic',
+      vibe: 'Dusty rose linen, champagne towers, wood log plates, warm floor cushions',
+      drink: 'Blush French 75 with lavender and honey syrup',
+      activity: 'Gourmet cheese pairing class or live acoustic guitar lounge',
+      description: 'You treasure organic luxury, beautiful textures, and comfortable dining. A champagne garden picnic is perfect.'
     },
     Gemini: {
-      theme: 'Retro Arcade Mixer',
-      vibe: 'Glitch effects, dynamic social setups, neon lighting, diverse soundscapes',
-      drink: 'A color-changing butterfly pea flower gin sour',
-      activity: 'Retro arcade challenge with custom trivia game questions',
-      description: 'Social and intellectually curious, your ideal party has multiple areas to mingle and plenty of conversation starters.'
+      theme: 'Rose Gold Vinyl Soirée',
+      vibe: 'Warm amber spotlights, copper highlights, customized cocktail lounges',
+      drink: 'Rose water gin spritz with edible gold flakes',
+      activity: 'Custom record session and interactive social mixer cards',
+      description: 'Social and curious, you love mingling. A modern speakeasy vibe with curated records keeps guests engaged.'
     },
     Cancer: {
-      theme: 'Moonlit Garden Dinner',
-      vibe: 'Intimate setting, hanging candles, silver decor, cozy blankets',
-      drink: 'Elderflower & Pear mocktail or premium Rosé Champagne',
-      activity: 'Heartfelt toast round and a vintage retro photo booth',
-      description: 'You treasure close relationships. A sentimental, beautifully lit dinner under the stars is perfect for you.'
+      theme: 'Moonlit Rose dinner',
+      vibe: 'Intimate setting, glowing candles, dusty pink drapery, gold plates',
+      drink: 'Elderflower & Pear mocktail served in vintage champagne coupés',
+      activity: 'Heartfelt storytelling toasts round and polaroid photoshoot',
+      description: 'You cherish close friends. A warm, candlelight dinner styled in soft rose gold fits your gentle character.'
     },
     Leo: {
-      theme: 'Hollywood Glamour Gala',
-      vibe: 'Gold backdrops, velvet red carpets, flashing photo walls, glitter highlights',
-      drink: 'Gold-leaf infused French 75 or dry Champagne tower',
-      activity: 'A mini awards ceremony celebrating all the guests',
-      description: 'Born to stand out, your celebration should feel like a premier night. Let the spotlight shine on your special day.'
+      theme: 'Hollywood Champagne Gala',
+      vibe: 'Rose gold backdrops, velvet red carpets, warm spotlights, glitter accents',
+      drink: 'Champagne tower garnished with fresh strawberry slices',
+      activity: 'Custom polaroid red carpet shoot and mini toast awards',
+      description: 'Born to celebrate, your birthday needs a touch of premier gala styling. Let the champagne and spotlights shine.'
     },
     Virgo: {
-      theme: 'Botanical Greenhouse Cocktail',
-      vibe: 'Potted plants, structured geometric brass frames, clean linen, neat botanicals',
-      drink: 'Fresh Botanical Gin & Tonic with rosemary and cucumber slices',
-      activity: 'Terrarium building workshop or mixology masterclass',
-      description: 'You love order, details, and nature. A clean, premium botanical experience matches your thoughtful personality.'
+      theme: 'Dusty Rose Greenhouse Lounge',
+      vibe: 'Potted botanicals, brass geometric arches, rose gold lanterns, clean line setups',
+      drink: 'Rosemary & Grapefruit Gin Cocktail with a copper straw',
+      activity: 'Terrarium design workshop or botanical mocktail pairing',
+      description: 'You appreciate nature, structure, and high detail. A greenhouse garden cocktail night meets your aesthetics.'
     },
     Libra: {
       theme: 'Art Deco Velvet Lounge',
-      vibe: 'Symmetrical brass lines, plush velvet couches, jazz music, soft amber lights',
-      drink: 'Classic Espresso Martini or a sparkling Prosecco punch',
-      activity: 'Live jazz saxophonist performance and a custom perfume bar',
-      description: 'Ruled by Venus, you seek beauty, symmetry, and high-class aesthetics. Your party should be visually balanced and chic.'
+      vibe: 'Symmetrical gold outlines, dark mahogany details, dusty pink velvet lounges',
+      drink: 'Classic Espresso Martini dusted with gold cocoa powder',
+      activity: 'Live saxophonist set and customized perfume design bar',
+      description: 'Ruled by Venus, you seek visual symmetry, high art, and luxury. A vintage velvet lounge matches your vibe.'
     },
     Scorpio: {
-      theme: 'Masquerade Mystique Night',
-      vibe: 'Burgundy velvet, lace masks, dark crimson roses, candlelit tables',
-      drink: 'Spiced Pomegranate Old Fashioned or dark Blackberry Negroni',
-      activity: 'Interactive murder mystery game or tarot reading booth',
-      description: 'Mysterious, passionate, and deep. A masked night filled with hidden secrets and rich colors suits you.'
+      theme: 'Burgundy Masquerade Night',
+      vibe: 'Deep burgundy velvet, dark roses, warm candle glow, copper outlines',
+      drink: 'Spiced Blackberry Old Fashioned with orange peel twist',
+      activity: 'Tarot constellation cards reading or custom mystery game',
+      description: 'Intimate, mysterious, and deep. A masked night styled in rich burgundies and warm candlelight represents your energy.'
     },
     Sagittarius: {
-      theme: 'Wanderlust Glamping Fest',
-      vibe: 'Festival flags, colorful kilim rugs, massive bonfire, stargazing deck',
-      drink: 'Spiced hot apple cider or a dynamic passionfruit mojito',
-      activity: 'Stargazing with telescopes or storytelling around a fire',
-      description: 'An adventurer at heart. Your party should feel like an outdoor festival, filled with free-spirited storytelling.'
+      theme: 'Wanderlust Champagne Campfire',
+      vibe: 'Glamping tents, rose gold fairy lights, massive warm bonfire, blankets',
+      drink: 'Warm apple cider spiced with cinnamon and dark rum',
+      activity: 'Stargazing session or fireside acoustic guitar storytelling',
+      description: 'Free spirited and travel-loving. An upscale festival-style glamping night under the stars is ideal.'
     },
     Capricorn: {
-      theme: 'Obsidian Speakeasy Lounge',
-      vibe: 'Dark leather, brass bar carts, vintage vinyl records, warm jazz',
-      drink: 'Premium Single Malt Scotch or classic Manhattan',
-      activity: 'Whiskey tasting class or pool table shootout tournament',
-      description: 'Classic, ambitious, and elegant. A high-end speakeasy vibe is the ultimate understated flexing of quality.'
+      theme: 'Obsidian & Gold Speakeasy',
+      vibe: 'Soft black leather, warm brass lights, vintage records, copper details',
+      drink: 'Aged Single Malt Scotch with a smoked rosemary twig',
+      activity: 'Professional mixology tutorial or custom pool shootout',
+      description: 'You love timeless elegance. A private speakeasy vibe with dark mahogany and copper details suits your ambition.'
     },
     Aquarius: {
-      theme: 'Cyber Glow Rave',
-      vibe: 'Holographic accents, neon face paints, industrial silver decor, synthesizer lofi',
-      drink: 'Electric Blue Lagoon cocktail with flashing ice cubes',
-      activity: 'Collaborative glowing canvas graffiti wall',
-      description: 'Futuristic, eccentric, and community-minded. A techno-glow party lets your unique character express itself.'
+      theme: 'Blush Hologram Silhouette',
+      vibe: 'Holographic cards, custom blush lighting grids, silver details, chill beats',
+      drink: 'Blue Curacao Prosecco spritz topped with cotton candy',
+      activity: 'Graffiti collaborative mural canvas and synth music beats',
+      description: 'Futuristic yet community-oriented. A modern creative lounge with soft holographic blush tones fits your uniqueness.'
     },
     Pisces: {
-      theme: 'Under-the-Stars Ocean Sanctuary',
-      vibe: 'Soft teal and lavender lights, wave projectors, floating candles, dreamy harp beats',
-      drink: 'Blue Curacao Prosecco Spritz or Coconut Milk Punch',
-      activity: 'Intimate acoustic music session or group watercolor painting',
-      description: 'A deeply creative dreamer. A mystical, water-themed visual paradise matches your imaginative soul.'
+      theme: 'Ocean Rose Sanctuary',
+      vibe: 'Dreamy wave lights, floating candles, rose water fragrances, soft harp tracks',
+      drink: 'Coconut milk prosecco punch with a rose petal garnish',
+      activity: 'Intimate acoustic music circle or watercolor painting workshop',
+      description: 'An imaginative dreamer. A soft water-inspired setup with floating candles and dusty rose details is perfect.'
     }
   };
 
@@ -218,47 +218,88 @@ const getMockAIRecommendation = (prompt: string) => {
   
   if (normalized.includes('beach') || normalized.includes('ocean') || normalized.includes('sand')) {
     return {
-      title: 'Tiki Sunset Oasis',
-      vibe: 'Casual beach luxury, tropical colors, warm bamboo structures, and soft fire torches.',
-      decor: 'Hanging paper lanterns, bamboo torches, natural jute carpets, pineapple centerpieces, driftwood bar.',
-      food: 'Coconut prawns, mango lime skewers, teriyaki chicken slides, grilled pineapple cubes.',
-      drink: 'Spiced Rum Painkiller garnished with freshly grated nutmeg and a slice of toasted coconut.',
-      music: 'Tropical house remix, steel drum acoustic, soft reggae vibes.'
+      title: 'Blush Sunset Oasis',
+      vibe: 'Casual beach luxury styled in warm pink sunset tones, gold accents, and bamboo structures.',
+      decor: 'Rose gold fairy lights, copper lanterns, natural jute carpets, dried palm centerpieces, champagne bar.',
+      food: 'Lobster slides, coconut lime shrimp skewers, rose water cupcakes, pink dragonfruit bites.',
+      drink: 'The "Blush Spritz" - Pink champagne, elderflower liqueur, fresh mint leaf garnish.',
+      music: 'Romantic acoustic covers, tropical chill house, soft vocal beats.'
     };
   }
   
   if (normalized.includes('cyber') || normalized.includes('neon') || normalized.includes('arcade') || normalized.includes('synthwave')) {
     return {
-      title: 'Vaporwave Grid 88',
-      vibe: 'Cyberpunk aesthetics, violet/hot pink lighting grids, retro arcade machines, and industrial silver accents.',
-      decor: 'LED wall panels showing pixel art, glowing neon cocktail tables, metallic silver streamers, wire grid frames.',
-      food: 'Glazed pork belly buns, wasabi shrimp, neon colored macarons, black charcoal slider buns.',
-      drink: 'The "Laser Sour" - Gin, blue curacao, lime juice, topped with popping candy.',
-      music: 'Heavy retro synthwave, cyber-techno, Daft Punk-style EDM.'
+      title: 'Rose Gold Rave',
+      vibe: 'Modern creative grid layout focusing on soft rose gold accents, warm glowing panels, and industrial copper.',
+      decor: 'Blush LED tube frames, copper grid panels, holographic menu cards, floating candle pools.',
+      food: 'Pork belly skewers, pink sushi rice, raspberry rose macarons, white chocolate slider buns.',
+      drink: 'The "Rose Gold Glitch" - Bourbon, rose water syrup, ginger ale, gold glitter swirl.',
+      music: 'Soft synthwave tracks, lo-fi electronic, Daft Punk ambient covers.'
     };
   }
 
   if (normalized.includes('cozy') || normalized.includes('stargaze') || normalized.includes('forest') || normalized.includes('wood')) {
     return {
-      title: 'Glamping & Nebula Night',
-      vibe: 'Cozy boho cabin meets deep stellar vibes, featuring heavy wood elements, wool blankets, and stargazing telescopes.',
-      decor: 'Geodesic dome canvas tents, warm sheepskin rugs, vintage lanterns, massive firepit setup, projection of starry constellations.',
-      food: 'Gourmet Smores station (flavored marshmallows, dark chocolates), rustic wood-fired flatbreads, warm butternut squash soup cups.',
-      drink: 'Warm Bourbon Maple Toddy served in toasted copper mugs.',
-      music: 'Acoustic indie folk (Bon Iver, Fleet Foxes vibe), ambient soft acoustic instrumentals.'
+      title: 'Champagne Stargazing Bonfire',
+      vibe: 'Cozy glamping cabin meets deep stellar vibes, featuring rose gold lanterns, wool blankets, and telescopes.',
+      decor: 'Canvas bell tents, sheepskin rugs, brass lanterns, massive stone firepit, blush starry sky projections.',
+      food: 'Gourmet caramel s\'mores, warm butternut squash soup, flatbreads with figs and goat cheese.',
+      drink: 'Warm Bourbon Maple Toddy served in toasted rose gold copper mugs.',
+      music: 'Indie acoustic folk, fingerstyle guitar covers, soft acoustic ambient.'
     };
   }
 
   // Fallback
   return {
-    title: 'Ethereal Sparkle Lounge',
-    vibe: 'A high-end modern layout focusing on warm white glows, metallic brass accents, and glassmorphic aesthetics.',
-    decor: 'Hanging geometric lights, white flower arrangements with brass vases, glowing crystal displays, soft linen drapes.',
+    title: 'Gilded Blush Lounge',
+    vibe: 'A high-end modern layout focusing on warm white glows, metallic brass accents, and glassmorphic designs.',
+    decor: 'Hanging geometric brass lamps, pink peony arrangements in gold vases, candlelit crystals, blush linen curtains.',
     food: 'Truffle mushroom flatbreads, smoked salmon blinis, white chocolate raspberry tartlets, artisan cheese wheels.',
-    drink: 'The "Dream Sparkler" - French champagne, elderflower liqueur, garnished with an edible pansy petal.',
+    drink: 'The "Dream Sparkler" - French champagne, elderflower liqueur, garnished with a rose petal.',
     music: 'Upbeat organic house, chic lounge jazz, contemporary chill covers.'
   };
 };
+
+// Zodiac Preset details for interactive constellation map
+const ZODIAC_PRESETS = [
+  { sign: 'Aries', icon: '♈', date: '2001-04-05', range: 'Mar 21 - Apr 19' },
+  { sign: 'Taurus', icon: '♉', date: '2001-05-05', range: 'Apr 20 - May 20' },
+  { sign: 'Gemini', icon: '♊', date: '2001-06-05', range: 'May 21 - Jun 20' },
+  { sign: 'Cancer', icon: '♋', date: '2001-07-05', range: 'Jun 21 - Jul 22' },
+  { sign: 'Leo', icon: '♌', date: '2001-08-05', range: 'Jul 23 - Aug 22' },
+  { sign: 'Virgo', icon: '♍', date: '2001-09-05', range: 'Aug 23 - Sep 22' },
+  { sign: 'Libra', icon: '♎', date: '2001-10-05', range: 'Sep 23 - Oct 22' },
+  { sign: 'Scorpio', icon: '♏', date: '2001-11-05', range: 'Oct 23 - Nov 21' },
+  { sign: 'Sagittarius', icon: '♐', date: '2001-12-05', range: 'Nov 22 - Dec 21' },
+  { sign: 'Capricorn', icon: '♑', date: '2001-01-05', range: 'Dec 22 - Jan 19' },
+  { sign: 'Aquarius', icon: '♒', date: '2001-02-05', range: 'Jan 20 - Feb 18' },
+  { sign: 'Pisces', icon: '♓', date: '2001-03-05', range: 'Feb 19 - Mar 20' }
+];
+
+// Predefined Dream Atmosphere presets for AI generator
+const AI_PRESET_CARDS = [
+  {
+    title: 'Cozy Glamping Campfire',
+    emoji: '🍂',
+    prompt: 'Cozy outdoor stargazing bonfire for a birthday with warm blankets and hot toddies.',
+    bg: 'linear-gradient(135deg, rgba(222,195,157,0.06), rgba(200,122,144,0.03))',
+    glow: 'rgba(222, 195, 157, 0.25)'
+  },
+  {
+    title: 'Velvet Jazz Lounge',
+    emoji: '🎷',
+    prompt: 'An upscale cocktail soirée in a luxury jazz bar with amber lights and rich velvet aesthetics.',
+    bg: 'linear-gradient(135deg, rgba(200,122,144,0.06), rgba(170,91,113,0.03))',
+    glow: 'rgba(200, 122, 144, 0.25)'
+  },
+  {
+    title: 'Blush Sunset Oasis',
+    emoji: '🌊',
+    prompt: 'A beachside sunset birthday celebration with gold decorations, champagne towers, and tropical lofi.',
+    bg: 'linear-gradient(135deg, rgba(229,179,192,0.06), rgba(222,195,157,0.03))',
+    glow: 'rgba(229, 179, 192, 0.25)'
+  }
+];
 
 export default function PlannerSuite() {
   const [activeTab, setActiveTab] = useState('invitation');
@@ -383,6 +424,24 @@ export default function PlannerSuite() {
     }, 1500);
   };
 
+  // Run AI Preset Generation
+  const handleAIPresetGenerate = (prompt: string) => {
+    setAiPrompt(prompt);
+    setAiLoading(true);
+    setAiOutput(null);
+    setTimeout(() => {
+      const res = getMockAIRecommendation(prompt);
+      setAiOutput(res);
+      setAiLoading(false);
+    }, 1500);
+  };
+
+  // Handle Zodiac Constellation Click
+  const handleZodiacSelect = (preset: typeof ZODIAC_PRESETS[0]) => {
+    setBirthdate(preset.date);
+    setZodiacResult(getZodiacDetails(preset.date));
+  };
+
   // Trigger Save Invitation animation
   const handleSaveInvite = () => {
     setInviteSaved(true);
@@ -398,6 +457,35 @@ export default function PlannerSuite() {
 
   return (
     <section id="planner" className="section" style={{ position: 'relative', overflow: 'hidden' }}>
+      
+      {/* Ambient glow areas */}
+      <div 
+        style={{
+          position: 'absolute',
+          top: '30%',
+          right: '-12%',
+          width: '550px',
+          height: '550px',
+          background: 'radial-gradient(circle, rgba(222, 195, 157, 0.07) 0%, transparent 70%)',
+          filter: 'blur(100px)',
+          zIndex: -1,
+          pointerEvents: 'none'
+        }}
+      />
+      <div 
+        style={{
+          position: 'absolute',
+          bottom: '15%',
+          left: '-8%',
+          width: '500px',
+          height: '500px',
+          background: 'radial-gradient(circle, rgba(200, 122, 144, 0.08) 0%, transparent 70%)',
+          filter: 'blur(95px)',
+          zIndex: -1,
+          pointerEvents: 'none'
+        }}
+      />
+
       <div className="container">
         
         {/* Header Text */}
@@ -407,12 +495,12 @@ export default function PlannerSuite() {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.4rem',
-              backgroundColor: 'rgba(6, 182, 212, 0.1)',
-              border: '1px solid rgba(6, 182, 212, 0.25)',
-              color: '#22d3ee',
+              backgroundColor: 'rgba(200, 122, 144, 0.08)',
+              border: '1px solid rgba(200, 122, 144, 0.2)',
+              color: 'var(--color-primary)',
               fontSize: '0.8rem',
-              fontWeight: 700,
-              padding: '0.35rem 0.9rem',
+              fontWeight: 600,
+              padding: '0.35rem 1rem',
               borderRadius: '50px',
               fontFamily: 'var(--font-display)',
               textTransform: 'uppercase',
@@ -420,7 +508,7 @@ export default function PlannerSuite() {
             }}
           >
             <Sparkles size={12} />
-            <span>Interactive Workshop</span>
+            <span>Atelier Workshop</span>
           </div>
           <h2 style={{ fontSize: 'clamp(2rem, 3.5vw, 3rem)', fontWeight: 800 }}>
             Celebration <span className="text-gradient-primary">Planner Suite</span>
@@ -431,50 +519,43 @@ export default function PlannerSuite() {
         </div>
 
         {/* Dashboard Shell */}
-        <div className="glass-card planner-dashboard-shell" style={{ padding: '0', borderRadius: '24px', display: 'flex', border: '1px solid rgba(255, 255, 255, 0.08)', boxShadow: '0 30px 60px rgba(0,0,0,0.5)', overflow: 'hidden' }}>
+        <div className="glass-card planner-dashboard-shell" style={{ padding: '0', borderRadius: '24px', display: 'flex', flexDirection: 'column', border: '1px solid rgba(255, 255, 255, 0.08)', boxShadow: '0 30px 60px rgba(0,0,0,0.5)', overflow: 'hidden' }}>
           
-          {/* Dashboard Left Sidebar Tabs */}
-          <div className="planner-sidebar" style={{ width: '260px', background: 'rgba(10, 10, 15, 0.6)', borderRight: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', flexDirection: 'column', padding: '1.5rem 1rem', gap: '0.4rem' }}>
-            <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.08em', paddingLeft: '0.75rem', marginBottom: '0.75rem' }}>Planning Console</p>
-            
+          {/* Curation Atelier Top Navigation */}
+          <div className="planner-sidebar" style={{ width: '100%', background: 'rgba(20, 16, 18, 0.3)', borderBottom: '1px solid rgba(222, 195, 157, 0.08)', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', padding: '1.25rem', gap: '1rem', flexWrap: 'wrap' }}>
             <button 
               onClick={() => setActiveTab('invitation')} 
-              className={`tab-btn ${activeTab === 'invitation' ? 'active' : ''}`}
+              className={`atelier-tab-btn ${activeTab === 'invitation' ? 'active' : ''}`}
             >
-              <Mail size={18} />
-              <span>Invitation Creator</span>
+              <span>Invitation Atelier</span>
             </button>
             
             <button 
               onClick={() => setActiveTab('theme')} 
-              className={`tab-btn ${activeTab === 'theme' ? 'active' : ''}`}
+              className={`atelier-tab-btn ${activeTab === 'theme' ? 'active' : ''}`}
             >
-              <Palette size={18} />
-              <span>Theme Generator</span>
+              <span>Theme Curator</span>
             </button>
             
             <button 
               onClick={() => setActiveTab('zodiac')} 
-              className={`tab-btn ${activeTab === 'zodiac' ? 'active' : ''}`}
+              className={`atelier-tab-btn ${activeTab === 'zodiac' ? 'active' : ''}`}
             >
-              <Moon size={18} />
-              <span>Zodiac Inspiration</span>
+              <span>Celestial Inspiration</span>
             </button>
             
             <button 
               onClick={() => setActiveTab('planner')} 
-              className={`tab-btn ${activeTab === 'planner' ? 'active' : ''}`}
+              className={`atelier-tab-btn ${activeTab === 'planner' ? 'active' : ''}`}
             >
-              <ClipboardList size={18} />
-              <span>Party Planner</span>
+              <span>Celebration Planner</span>
             </button>
             
             <button 
               onClick={() => setActiveTab('ai')} 
-              className={`tab-btn ${activeTab === 'ai' ? 'active' : ''}`}
+              className={`atelier-tab-btn ${activeTab === 'ai' ? 'active' : ''}`}
             >
-              <Wand2 size={18} />
-              <span>AI Recommendations</span>
+              <span>Party Magic</span>
             </button>
           </div>
 
@@ -502,7 +583,7 @@ export default function PlannerSuite() {
                             padding: '0.5rem 1rem',
                             borderRadius: '8px',
                             background: invTheme.id === theme.id ? 'var(--color-primary)' : 'rgba(255,255,255,0.03)',
-                            border: invTheme.id === theme.id ? '1px solid #c084fc' : '1px solid rgba(255,255,255,0.08)',
+                            border: invTheme.id === theme.id ? '1px solid var(--color-primary)' : '1px solid rgba(255,255,255,0.08)',
                             color: 'white',
                             fontSize: '0.8rem',
                             fontWeight: 600,
@@ -516,28 +597,126 @@ export default function PlannerSuite() {
                     </div>
                   </div>
 
-                  {/* Form Inputs */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }} className="invitation-form-fields">
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                      <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#94a3b8' }}>Birthday Star's Name</label>
-                      <input type="text" className="glass-input" value={invName} onChange={(e) => setInvName(e.target.value.toUpperCase())} maxLength={20} />
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                      <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#94a3b8' }}>Age Celebrating</label>
-                      <input type="text" className="glass-input" value={invAge} onChange={(e) => setInvAge(e.target.value)} maxLength={3} />
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', gridColumn: 'span 2' }} className="col-span-full">
-                      <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#94a3b8' }}>Tagline / Party Vibe</label>
-                      <input type="text" className="glass-input" value={invVibe} onChange={(e) => setInvVibe(e.target.value)} maxLength={50} />
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                      <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#94a3b8' }}>Date and Time</label>
-                      <input type="text" className="glass-input" value={invDate} onChange={(e) => setInvDate(e.target.value)} />
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                      <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#94a3b8' }}>Venue Location</label>
-                      <input type="text" className="glass-input" value={invVenue} onChange={(e) => setInvVenue(e.target.value)} />
-                    </div>
+                  {/* Cursive Natural Language Fill-in-the-Blanks */}
+                  <div 
+                    style={{ 
+                      padding: '2rem 1.5rem', 
+                      borderRadius: '16px', 
+                      background: 'rgba(222, 195, 157, 0.02)', 
+                      border: '1px solid rgba(222, 195, 157, 0.12)', 
+                      lineHeight: '2.5', 
+                      fontFamily: 'var(--font-serif)', 
+                      fontSize: '1.25rem', 
+                      color: '#f3e8ee',
+                      textAlign: 'left',
+                      boxShadow: 'inset 0 0 20px rgba(222,195,157,0.02)',
+                    }}
+                    className="cursive-letterpress-editor"
+                  >
+                    <span>You are cordially invited to celebrate the birthday of </span>
+                    <input 
+                      type="text" 
+                      placeholder="STAR'S NAME" 
+                      value={invName} 
+                      onChange={(e) => setInvName(e.target.value.toUpperCase())} 
+                      maxLength={20} 
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        borderBottom: '1.5px solid rgba(222, 195, 157, 0.45)',
+                        color: 'var(--color-primary)',
+                        fontFamily: 'var(--font-display)',
+                        fontWeight: 700,
+                        fontSize: '1.2rem',
+                        textAlign: 'center',
+                        padding: '0 0.5rem',
+                        width: '180px',
+                        outline: 'none',
+                      }}
+                    />
+                    <span> as they celebrate their </span>
+                    <input 
+                      type="text" 
+                      placeholder="AGE" 
+                      value={invAge} 
+                      onChange={(e) => setInvAge(e.target.value)} 
+                      maxLength={3} 
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        borderBottom: '1.5px solid rgba(222, 195, 157, 0.45)',
+                        color: 'var(--color-primary)',
+                        fontFamily: 'var(--font-display)',
+                        fontWeight: 700,
+                        fontSize: '1.2rem',
+                        textAlign: 'center',
+                        padding: '0 0.2rem',
+                        width: '55px',
+                        outline: 'none',
+                      }}
+                    />
+                    <span> milestone. Let's gather under a vibe of </span>
+                    <input 
+                      type="text" 
+                      placeholder="Midnight Stars & Golden Bubbles" 
+                      value={invVibe} 
+                      onChange={(e) => setInvVibe(e.target.value)} 
+                      maxLength={50} 
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        borderBottom: '1.5px solid rgba(222, 195, 157, 0.45)',
+                        color: 'var(--color-primary)',
+                        fontFamily: 'var(--font-display)',
+                        fontWeight: 700,
+                        fontSize: '1.2rem',
+                        textAlign: 'center',
+                        padding: '0 0.5rem',
+                        width: '280px',
+                        outline: 'none',
+                      }}
+                    />
+                    <span>. We shall assemble at </span>
+                    <input 
+                      type="text" 
+                      placeholder="THE OBSIDIAN LOUNGE, NYC" 
+                      value={invVenue} 
+                      onChange={(e) => setInvVenue(e.target.value)} 
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        borderBottom: '1.5px solid rgba(222, 195, 157, 0.45)',
+                        color: 'var(--color-primary)',
+                        fontFamily: 'var(--font-display)',
+                        fontWeight: 700,
+                        fontSize: '1.2rem',
+                        textAlign: 'center',
+                        padding: '0 0.5rem',
+                        width: '260px',
+                        outline: 'none',
+                      }}
+                    />
+                    <span> on </span>
+                    <input 
+                      type="text" 
+                      placeholder="SATURDAY, OCT 12TH • 9:00 PM" 
+                      value={invDate} 
+                      onChange={(e) => setInvDate(e.target.value)} 
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        borderBottom: '1.5px solid rgba(222, 195, 157, 0.45)',
+                        color: 'var(--color-primary)',
+                        fontFamily: 'var(--font-display)',
+                        fontWeight: 700,
+                        fontSize: '1.2rem',
+                        textAlign: 'center',
+                        padding: '0 0.5rem',
+                        width: '280px',
+                        outline: 'none',
+                      }}
+                    />
+                    <span> to raise our glasses.</span>
                   </div>
 
                   <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
@@ -633,9 +812,9 @@ export default function PlannerSuite() {
                       style={{
                         padding: '0.6rem 1.25rem',
                         borderRadius: '30px',
-                        background: selectedVibe.id === vibe.id ? 'rgba(236,72,153,0.12)' : 'rgba(255,255,255,0.03)',
-                        border: selectedVibe.id === vibe.id ? '1px solid rgba(236,72,153,0.4)' : '1px solid rgba(255,255,255,0.08)',
-                        color: selectedVibe.id === vibe.id ? '#f472b6' : '#94a3b8',
+                        background: selectedVibe.id === vibe.id ? 'rgba(200, 122, 144, 0.12)' : 'rgba(255,255,255,0.02)',
+                        border: selectedVibe.id === vibe.id ? '1px solid rgba(200, 122, 144, 0.4)' : '1px solid rgba(255,255,255,0.08)',
+                        color: selectedVibe.id === vibe.id ? 'var(--color-primary)' : '#94a3b8',
                         fontSize: '0.88rem',
                         fontWeight: 600,
                         cursor: 'pointer',
@@ -702,7 +881,7 @@ export default function PlannerSuite() {
                         ))}
                       </div>
                       {copiedColor && (
-                        <p style={{ fontSize: '0.75rem', color: '#22d3ee', fontWeight: 600, marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+                        <p style={{ fontSize: '0.75rem', color: '#dec39d', fontWeight: 600, marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
                           <Sparkles size={12} />
                           <span>Copied hex code {copiedColor} to clipboard!</span>
                         </p>
@@ -717,7 +896,7 @@ export default function PlannerSuite() {
                       <ul style={{ listStyleType: 'none', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                         {selectedVibe.decor.map((item, idx) => (
                           <li key={idx} style={{ fontSize: '0.8rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                            <span style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: '#ec4899' }} />
+                            <span style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'var(--color-primary)' }} />
                             <span>{item}</span>
                           </li>
                         ))}
@@ -727,7 +906,7 @@ export default function PlannerSuite() {
                     <div className="glass-card" style={{ padding: '1.25rem', backgroundColor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
                       <h5 style={{ fontSize: '0.9rem', color: '#e2e8f0', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '0.5rem', marginBottom: '0.75rem', fontWeight: 600 }}>Music & Soundscapes</h5>
                       <p style={{ fontSize: '0.8rem', color: '#94a3b8', lineHeight: '1.5' }}>{selectedVibe.music}</p>
-                      <div style={{ marginTop: '1rem', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.7rem', color: '#8b5cf6', background: 'rgba(139,92,246,0.1)', padding: '0.2rem 0.6rem', borderRadius: '4px', fontWeight: 600 }}>
+                      <div style={{ marginTop: '1rem', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.7rem', color: 'var(--color-primary)', background: 'rgba(200, 122, 144, 0.1)', padding: '0.2rem 0.6rem', borderRadius: '4px', fontWeight: 600 }}>
                         <span>Curated Playlist</span>
                       </div>
                     </div>
@@ -747,16 +926,53 @@ export default function PlannerSuite() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '2rem' }} className="zodiac-grid">
                   
-                  {/* Date Input */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', justifyContent: 'center' }}>
+                  {/* Date Input & Constellation Selector */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                    
+                    <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#dec39d', textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: 'var(--font-display)', display: 'block' }}>
+                      Explore Golden Constellations
+                    </span>
+                    
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.75rem' }} className="constellation-wheel">
+                      {ZODIAC_PRESETS.map((preset) => (
+                        <button
+                          key={preset.sign}
+                          onClick={() => handleZodiacSelect(preset)}
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            padding: '0.75rem 0.4rem',
+                            borderRadius: '12px',
+                            background: zodiacResult?.sign === preset.sign ? 'rgba(200, 122, 144, 0.12)' : 'rgba(255,255,255,0.02)',
+                            border: zodiacResult?.sign === preset.sign ? '1px solid var(--color-primary)' : '1px solid rgba(222, 195, 157, 0.12)',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                            boxShadow: zodiacResult?.sign === preset.sign ? '0 0 15px rgba(200, 122, 144, 0.2)' : 'none',
+                          }}
+                          className="constellation-button"
+                        >
+                          <span style={{ fontSize: '1.4rem', color: zodiacResult?.sign === preset.sign ? 'var(--color-primary)' : '#f3e8ee' }}>{preset.icon}</span>
+                          <span style={{ fontSize: '0.68rem', fontWeight: 600, color: zodiacResult?.sign === preset.sign ? 'var(--color-primary)' : '#94a3b8', marginTop: '0.15rem' }}>{preset.sign}</span>
+                          <span style={{ fontSize: '0.52rem', color: '#64748b' }}>{preset.range.split(' - ')[0]}</span>
+                        </button>
+                      ))}
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', margin: '0.25rem 0' }}>
+                      <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.06)' }} />
+                      <span style={{ fontSize: '0.65rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Or Align by Calendar Date</span>
+                      <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.06)' }} />
+                    </div>
+
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxWidth: '300px' }}>
-                      <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#94a3b8' }}>Select Birthday Date</label>
                       <input 
                         type="date" 
                         className="glass-input" 
                         value={birthdate} 
                         onChange={handleDateChange} 
-                        style={{ colorScheme: 'dark' }} 
+                        style={{ colorScheme: 'dark', fontSize: '0.85rem' }} 
                       />
                     </div>
 
@@ -789,13 +1005,13 @@ export default function PlannerSuite() {
                         className="glass-card" 
                         style={{
                           height: '100%',
-                          border: '1px solid rgba(139, 92, 246, 0.2)',
-                          boxShadow: '0 10px 30px rgba(139, 92, 246, 0.05)'
+                          border: '1px solid rgba(200, 122, 144, 0.2)',
+                          boxShadow: '0 10px 30px rgba(200, 122, 144, 0.05)'
                         }}
                       >
-                        <div style={{ position: 'absolute', top: 0, right: 0, width: '120px', height: '120px', background: 'radial-gradient(circle, rgba(6,182,212,0.1) 0%, transparent 70%)', filter: 'blur(10px)' }} />
+                        <div style={{ position: 'absolute', top: 0, right: 0, width: '120px', height: '120px', background: 'radial-gradient(circle, rgba(222, 195, 157, 0.08) 0%, transparent 70%)', filter: 'blur(10px)' }} />
                         <h4 style={{ fontSize: '1.25rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                          <span style={{ color: '#06b6d4' }}>Celestial Theme Proposal:</span>
+                          <span style={{ color: '#dec39d' }}>Celestial Theme Proposal:</span>
                           <span style={{ color: '#fff' }}>{zodiacResult.theme}</span>
                         </h4>
                         
@@ -887,7 +1103,7 @@ export default function PlannerSuite() {
                         background: 'linear-gradient(to right, var(--color-primary), var(--color-secondary))',
                         borderRadius: '10px',
                         transition: 'width 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-                        boxShadow: '0 0 10px rgba(139,92,246,0.5)'
+                        boxShadow: '0 0 10px rgba(200, 122, 144, 0.4)'
                       }}
                     />
                   </div>
@@ -897,19 +1113,30 @@ export default function PlannerSuite() {
                 <form onSubmit={addCheckItem} style={{ display: 'flex', gap: '0.6rem' }}>
                   <input
                     type="text"
-                    placeholder="e.g., Book catering company..."
+                    placeholder="Describe a bespoke detail to register..."
                     className="glass-input"
                     value={newCheckItem}
                     onChange={(e) => setNewCheckItem(e.target.value)}
-                    style={{ flex: 1 }}
+                    style={{ 
+                      flex: 1, 
+                      background: 'transparent', 
+                      border: 'none', 
+                      borderBottom: '1.5px solid rgba(222, 195, 157, 0.4)',
+                      borderRadius: '0',
+                      fontFamily: 'var(--font-serif)',
+                      fontStyle: 'italic',
+                      fontSize: '1.05rem',
+                      padding: '0.6rem 0'
+                    }}
                   />
-                  <button type="submit" className="btn btn-primary" style={{ padding: '0 1.25rem', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Plus size={18} />
+                  <button type="submit" className="btn btn-secondary" style={{ padding: '0 1.5rem', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span>Register Task</span>
+                    <Plus size={16} />
                   </button>
                 </form>
 
-                {/* Checklist list */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', maxHeight: '250px', overflowY: 'auto', paddingRight: '0.2rem' }}>
+                {/* Checklist list styled as Master Registry Ledger */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxHeight: '280px', overflowY: 'auto', paddingRight: '0.2rem' }}>
                   {checklist.map((item) => (
                     <div
                       key={item.id}
@@ -917,39 +1144,43 @@ export default function PlannerSuite() {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        padding: '0.75rem 1rem',
-                        background: 'rgba(255,255,255,0.02)',
-                        border: '1px solid rgba(255, 255, 255, 0.05)',
-                        borderRadius: '10px',
-                        transition: 'all 0.2s ease'
+                        padding: '0.85rem 1.25rem',
+                        background: item.completed ? 'rgba(255,255,255,0.01)' : 'rgba(222, 195, 157, 0.02)',
+                        border: '1px solid rgba(222, 195, 157, 0.08)',
+                        borderLeft: item.completed ? '3px solid var(--color-primary)' : '3px solid rgba(222, 195, 157, 0.35)',
+                        borderRadius: '8px',
+                        transition: 'all 0.3s ease'
                       }}
                       className="checklist-item-row"
                     >
                       <div 
                         onClick={() => toggleCheck(item.id)}
-                        style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', flex: 1 }}
+                        style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', cursor: 'pointer', flex: 1 }}
                       >
                         <div 
                           style={{
-                            width: '18px',
-                            height: '18px',
-                            borderRadius: '4px',
-                            border: item.completed ? '1.5px solid var(--color-primary)' : '1.5px solid rgba(255,255,255,0.25)',
-                            backgroundColor: item.completed ? 'rgba(139,92,246,0.15)' : 'transparent',
+                            width: '20px',
+                            height: '20px',
+                            borderRadius: '50%',
+                            border: '1.5px solid #dec39d',
+                            backgroundColor: item.completed ? 'rgba(200, 122, 144, 0.12)' : 'transparent',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            transition: 'all 0.2s'
+                            transition: 'all 0.25s',
+                            boxShadow: item.completed ? '0 0 8px rgba(222, 195, 157, 0.3)' : 'none'
                           }}
                         >
-                          {item.completed && <div style={{ width: '8px', height: '8px', backgroundColor: 'var(--color-primary)', borderRadius: '2px' }} />}
+                          {item.completed && <span style={{ fontSize: '11px', color: '#dec39d', fontWeight: 'bold' }}>✔</span>}
                         </div>
                         <span 
                           style={{
-                            fontSize: '0.88rem',
-                            color: item.completed ? '#64748b' : '#f1f5f9',
+                            fontSize: '0.95rem',
+                            fontFamily: 'var(--font-serif)',
+                            fontStyle: item.completed ? 'normal' : 'italic',
+                            color: item.completed ? '#64748b' : '#f3e8ee',
                             textDecoration: item.completed ? 'line-through' : 'none',
-                            transition: 'color 0.2s'
+                            transition: 'color 0.25s'
                           }}
                         >
                           {item.text}
@@ -984,6 +1215,39 @@ export default function PlannerSuite() {
                 <div>
                   <h3 style={{ fontSize: '1.5rem', marginBottom: '0.4rem' }}>AI Celebration Proposal</h3>
                   <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Describe your dream party and prompt the mockup AI. Try incorporating keywords like 'beach', 'stargaze', or 'neon'.</p>
+                </div>
+
+                {/* Predefined Atmosphere presets */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#dec39d', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-display)' }}>One-Click Dream Atmospheres</span>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }} className="atmosphere-grid">
+                    {AI_PRESET_CARDS.map((card) => (
+                      <button
+                        key={card.title}
+                        onClick={() => handleAIPresetGenerate(card.prompt)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.75rem',
+                          padding: '1rem',
+                          borderRadius: '16px',
+                          background: card.bg,
+                          border: '1.5px solid rgba(222, 195, 157, 0.12)',
+                          boxShadow: `0 8px 25px ${card.glow}`,
+                          cursor: 'pointer',
+                          textAlign: 'left',
+                          transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                        }}
+                        className="atmosphere-card"
+                      >
+                        <span style={{ fontSize: '1.8rem' }}>{card.emoji}</span>
+                        <div>
+                          <h4 style={{ fontSize: '0.92rem', fontWeight: 700, color: '#fff', marginBottom: '0.15rem' }}>{card.title}</h4>
+                          <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Tap to Curate</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Prompt box */}
@@ -1033,17 +1297,17 @@ export default function PlannerSuite() {
                       className="glass-card animate-fade-in" 
                       style={{
                         padding: '1.75rem',
-                        border: '1px solid rgba(16, 185, 129, 0.25)',
-                        backgroundColor: 'rgba(16, 185, 129, 0.02)',
-                        boxShadow: '0 10px 30px rgba(16, 185, 129, 0.05)'
+                        border: '1px solid rgba(222, 195, 157, 0.2)',
+                        backgroundColor: 'rgba(222, 195, 157, 0.02)',
+                        boxShadow: '0 10px 30px rgba(222, 195, 157, 0.05)'
                       }}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '0.75rem' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                          <Wand2 size={18} color="#10b981" />
-                          <h4 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#10b981' }}>{aiOutput.title}</h4>
+                          <Wand2 size={18} color="#dec39d" />
+                          <h4 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#dec39d', fontFamily: 'var(--font-serif)', fontStyle: 'italic' }}>{aiOutput.title}</h4>
                         </div>
-                        <span style={{ fontSize: '0.7rem', color: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', padding: '0.2rem 0.6rem', borderRadius: '4px', fontWeight: 600 }}>Proposal Ready</span>
+                        <span style={{ fontSize: '0.7rem', color: '#dec39d', backgroundColor: 'rgba(222, 195, 157, 0.1)', padding: '0.2rem 0.6rem', borderRadius: '4px', fontWeight: 600 }}>Proposal Ready</span>
                       </div>
 
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
@@ -1104,33 +1368,41 @@ export default function PlannerSuite() {
       </div>
 
       <style>{`
-        /* Sidebar Tab Styles */
-        .tab-btn {
-          display: flex;
-          align-items: center;
-          gap: 0.8rem;
-          padding: 0.8rem 1rem;
+        /* Atelier Top Navigation Bar Styles */
+        .atelier-tab-btn {
           background: none;
           border: none;
-          color: #94a3b8;
-          font-family: var(--font-display);
+          color: #b5a2ab;
+          font-family: var(--font-serif);
           font-weight: 500;
-          font-size: 0.92rem;
-          border-radius: 10px;
+          font-size: 1.15rem;
+          letter-spacing: 0.03em;
           cursor: pointer;
-          width: 100%;
-          text-align: left;
+          padding: 0.6rem 1.2rem;
           transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          position: relative;
         }
-        .tab-btn:hover {
-          color: white;
-          background: rgba(255, 255, 255, 0.03);
+        .atelier-tab-btn:hover {
+          color: #fcfafb;
+          transform: translateY(-1px);
         }
-        .tab-btn.active {
-          color: white;
-          background: rgba(139, 92, 246, 0.12);
-          border: 1px solid rgba(139, 92, 246, 0.2);
+        .atelier-tab-btn::after {
+          content: '';
+          position: absolute;
+          width: 0;
+          height: 1.5px;
+          bottom: -2px;
+          left: 50%;
+          background-color: var(--color-secondary);
+          transition: all 0.3s ease;
+        }
+        .atelier-tab-btn.active {
+          color: var(--color-secondary);
           font-weight: 600;
+        }
+        .atelier-tab-btn.active::after {
+          width: 60%;
+          left: 20%;
         }
 
         /* Color Bubble Hover */
@@ -1142,6 +1414,26 @@ export default function PlannerSuite() {
           opacity: 1 !important;
         }
 
+        /* Constellation Button Hover */
+        .constellation-button {
+          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        .constellation-button:hover {
+          transform: translateY(-2px);
+          border-color: var(--color-primary) !important;
+          box-shadow: 0 8px 20px rgba(200, 122, 144, 0.2) !important;
+        }
+
+        /* AI Dream Atmosphere Card Hover */
+        .atmosphere-card {
+          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        .atmosphere-card:hover {
+          transform: translateY(-3px) scale(1.02);
+          border-color: var(--color-primary) !important;
+          box-shadow: 0 12px 30px rgba(200, 122, 144, 0.25) !important;
+        }
+
         /* Checklist Row hover to show delete button */
         .checklist-item-row:hover .delete-item-btn {
           opacity: 1 !important;
@@ -1149,24 +1441,13 @@ export default function PlannerSuite() {
 
         /* Responsive Breakpoints for Dashboard */
         @media (max-width: 991px) {
-          .planner-dashboard-shell {
-            flex-direction: column !important;
-          }
           .planner-sidebar {
-            width: 100% !important;
-            border-right: none !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            flex-direction: row !important;
-            flex-wrap: wrap;
-            padding: 1.25rem !important;
+            padding: 1rem !important;
+            gap: 0.5rem !important;
           }
-          .planner-sidebar p {
-            display: none !important; /* Hide Sidebar category */
-          }
-          .tab-btn {
-            width: auto !important;
-            padding: 0.6rem 1rem !important;
-            font-size: 0.85rem !important;
+          .atelier-tab-btn {
+            padding: 0.4rem 0.8rem !important;
+            font-size: 0.95rem !important;
           }
           .planner-main-panel {
             padding: 1.5rem !important;
@@ -1206,6 +1487,17 @@ export default function PlannerSuite() {
           }
           .ai-split-grid {
             grid-template-columns: 1fr !important;
+          }
+          .atmosphere-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .constellation-wheel {
+            grid-template-columns: repeat(3, 1fr) !important;
+          }
+        }
+        @media (max-width: 480px) {
+          .constellation-wheel {
+            grid-template-columns: repeat(2, 1fr) !important;
           }
         }
       `}</style>
