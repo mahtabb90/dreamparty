@@ -493,3 +493,9 @@ The project combines:
 * premium visual presentation
 
 DreamParty is built to show how an AI-powered product can feel polished, personal, and useful — not only technically functional.
+
+## 🌐 Live Demo
+
+Live app: https://dreamparty.vercel.app/
+
+Backend health check: https://dreamparty.onrender.com/health
