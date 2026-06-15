@@ -297,7 +297,7 @@ export default function PlannerSuite() {
     { id: 6, text: 'Curate party music playlist', completed: false },
     { id: 7, text: 'Order food, appetizers and drinks', completed: false }
   ]);
-  const [newCheckItem, setNewCheckItem] = useState('');
+  const [newTask, setNewTask] = useState('');
 
   // AI Curation Form State
   const [aiName, setAiName] = useState('Aurelia');
@@ -359,14 +359,14 @@ export default function PlannerSuite() {
   };
 
   // Add Item to Checklist
-  const addCheckItem = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newCheckItem.trim()) return;
+  const handleAddTask = () => {
+    const trimmed = newTask.trim();
+    if (!trimmed) return;
     setChecklist([
       ...checklist,
-      { id: Date.now(), text: newCheckItem.trim(), completed: false }
+      { id: Date.now(), text: trimmed, completed: false }
     ]);
-    setNewCheckItem('');
+    setNewTask('');
   };
 
   // Toggle checklist
@@ -1331,13 +1331,19 @@ export default function PlannerSuite() {
                 </div>
 
                 {/* Form to Add Checklist Item */}
-                <form onSubmit={addCheckItem} style={{ display: 'flex', gap: '0.6rem' }}>
+                <form 
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleAddTask();
+                  }} 
+                  style={{ display: 'flex', gap: '0.6rem' }}
+                >
                   <input
                     type="text"
                     placeholder="Describe a bespoke detail to register..."
                     className="glass-input"
-                    value={newCheckItem}
-                    onChange={(e) => setNewCheckItem(e.target.value)}
+                    value={newTask}
+                    onChange={(e) => setNewTask(e.target.value)}
                     style={{ 
                       flex: 1, 
                       background: 'transparent', 
