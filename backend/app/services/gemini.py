@@ -1,5 +1,6 @@
 import json
 import logging
+import time
 from typing import Optional
 from app.config import settings
 from app.schemas.party import PartyIdeaRequest, PartyIdeaResponse
@@ -15,6 +16,58 @@ try:
 except ImportError:
     GENAI_AVAILABLE = False
     logger.warning("google-genai library not installed. Falling back to mock generator.")
+
+
+def is_temporary_error(e: Exception) -> bool:
+    """
+    Checks if a caught exception represents a temporary failure
+    (e.g., 503 Service Unavailable, 500 Server Error, timeout, rate limits, network issues).
+    """
+    # Check for google-genai SDK specific APIError
+    if GENAI_AVAILABLE:
+        try:
+            from google.genai.errors import APIError
+            if isinstance(e, APIError):
+                # 500+ server errors or 429 rate limit errors are temporary
+                if e.code >= 500 or e.code == 429:
+                    return True
+                
+                # Check status text/message
+                err_str = str(e).upper()
+                if any(phrase in err_str for phrase in ["UNAVAILABLE", "RESOURCE_EXHAUSTED", "503", "500", "429"]):
+                    return True
+                if e.status and e.status.upper() in ["UNAVAILABLE", "RESOURCE_EXHAUSTED"]:
+                    return True
+                if e.message and any(phrase in e.message.lower() for phrase in ["rate limit", "high demand", "too many requests", "temporarily unavailable"]):
+                    return True
+        except ImportError:
+            pass
+
+    # Check class names for network/timeout errors
+    class_name = e.__class__.__name__
+    network_classes = {
+        "HTTPError", "TimeoutException", "NetworkError", "ConnectError", "ConnectTimeout",
+        "ReadTimeout", "WriteTimeout", "PoolTimeout", "ProxyError", "RequestError",
+        "RequestException", "ConnectionError", "Timeout", "MaxRetryError", "SSLError"
+    }
+    if class_name in network_classes:
+        return True
+        
+    # Standard Python network/timeout errors
+    if isinstance(e, (TimeoutError, ConnectionError, OSError)):
+        return True
+        
+    # Check string patterns of the exception message
+    err_str = str(e).lower()
+    temporary_phrases = [
+        "timeout", "timed out", "connection refused", "connection reset", 
+        "503 unavailable", "500 server error", "service unavailable", 
+        "temporary", "high demand", "rate limit", "quota exceeded", "resource exhausted", "429"
+    ]
+    if any(phrase in err_str for phrase in temporary_phrases):
+        return True
+        
+    return False
 
 
 def generate_party_idea(request: PartyIdeaRequest) -> PartyIdeaResponse:
@@ -46,7 +99,6 @@ def generate_party_idea(request: PartyIdeaRequest) -> PartyIdeaResponse:
 
     if api_key and GENAI_AVAILABLE:
         try:
-            logger.info("Using Gemini API for party generation")
             client = genai.Client(api_key=api_key)
             
             interests_str = ", ".join(request.interests)
@@ -82,47 +134,81 @@ def generate_party_idea(request: PartyIdeaRequest) -> PartyIdeaResponse:
             )
 
             # Generate structured output using Pydantic schema enforcement (without examples to prevent extra_forbidden errors)
-            response = client.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json",
-                    response_schema=PartyIdeaResponse,
-                    temperature=0.7,
-                ),
-            )
+            max_attempts = 3
+            last_exception = None
+            response = None
             
-            if response.text:
-                # Remove markdown wraps if Gemini returned them despite strict prompt guidelines
-                clean_text = response.text.strip()
-                if clean_text.startswith("```"):
-                    first_line_end = clean_text.find("\n")
-                    if first_line_end != -1:
-                        clean_text = clean_text[first_line_end:].strip()
-                    if clean_text.endswith("```"):
-                        clean_text = clean_text[:-3].strip()
+            for attempt in range(1, max_attempts + 1):
+                try:
+                    if attempt == 1:
+                        logger.info("Using Gemini API for party generation")
+                    
+                    response = client.models.generate_content(
+                        model="gemini-2.5-flash",
+                        contents=prompt,
+                        config=types.GenerateContentConfig(
+                            response_mime_type="application/json",
+                            response_schema=PartyIdeaResponse,
+                            temperature=0.7,
+                        ),
+                    )
+                    # Success
+                    break
+                except Exception as e:
+                    last_exception = e
+                    is_temp = is_temporary_error(e)
+                    
+                    if not is_temp:
+                        logger.error(f"Gemini API generation failed with non-temporary error: {e}")
+                        break
+                    
+                    if attempt < max_attempts:
+                        logger.warning(f"Gemini attempt {attempt} failed, retrying...")
+                        time.sleep(attempt)
+                    else:
+                        logger.error(f"Gemini attempt {attempt} failed (final attempt): {e}")
 
-                raw_data = json.loads(clean_text)
-                
-                # Filter to allowed fields to prevent any client-side or parsing conflicts
-                filtered_data = {k: v for k, v in raw_data.items() if k in allowed_fields}
-                
-                # Verify and fill in missing fields from the mock backup to guarantee parsing validation succeeds
-                mock_data = None
-                for field in allowed_fields:
-                    if field not in filtered_data or filtered_data[field] is None:
-                        if mock_data is None:
-                            mock_data = _generate_mock_response(request)
-                        filtered_data[field] = getattr(mock_data, field)
+            if response is None:
+                logger.info("Gemini unavailable after retries, using mock fallback party generation")
+                return _generate_mock_response(request)
 
-                logger.info("Gemini party generation completed successfully")
-                return PartyIdeaResponse.model_validate(filtered_data)
-            else:
-                raise ValueError("Received empty response text from Gemini API")
+            try:
+                if response.text:
+                    # Remove markdown wraps if Gemini returned them despite strict prompt guidelines
+                    clean_text = response.text.strip()
+                    if clean_text.startswith("```"):
+                        first_line_end = clean_text.find("\n")
+                        if first_line_end != -1:
+                            clean_text = clean_text[first_line_end:].strip()
+                        if clean_text.endswith("```"):
+                            clean_text = clean_text[:-3].strip()
+
+                    raw_data = json.loads(clean_text)
+                    
+                    # Filter to allowed fields to prevent any client-side or parsing conflicts
+                    filtered_data = {k: v for k, v in raw_data.items() if k in allowed_fields}
+                    
+                    # Verify and fill in missing fields from the mock backup to guarantee parsing validation succeeds
+                    mock_data = None
+                    for field in allowed_fields:
+                        if field not in filtered_data or filtered_data[field] is None:
+                            if mock_data is None:
+                                mock_data = _generate_mock_response(request)
+                            filtered_data[field] = getattr(mock_data, field)
+
+                    logger.info("Gemini party generation completed successfully")
+                    return PartyIdeaResponse.model_validate(filtered_data)
+                else:
+                    raise ValueError("Received empty response text from Gemini API")
+            except Exception as parse_err:
+                logger.error(f"Error parsing Gemini response: {parse_err}")
+                logger.info("Gemini unavailable after retries, using mock fallback party generation")
+                return _generate_mock_response(request)
                 
         except Exception as e:
             logger.error(f"Gemini API generation failed: {e}. Falling back to mock generator.", exc_info=True)
-            # Fall through to mock generator
+            logger.info("Gemini unavailable after retries, using mock fallback party generation")
+            return _generate_mock_response(request)
 
     # Fallback to High-Quality Mock Response
     logger.info("Using mock fallback party generation")
