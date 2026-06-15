@@ -19,13 +19,25 @@ app = FastAPI(
 )
 
 # CORS Middleware configuration
-# Allows requests from Vite development server and other defined clients
-origins = settings.get_cors_origins()
+# Allows requests from local development, production, and preview Vercel deployments
+origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "https://dreamparty.vercel.app",
+]
+
+# Include any additional CORS origins configured via environment variables
+config_origins = settings.get_cors_origins()
+for origin in config_origins:
+    if origin not in origins:
+        origins.append(origin)
+
 logger.info(f"Configuring CORS with allowed origins: {origins}")
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
