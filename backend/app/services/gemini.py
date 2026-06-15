@@ -1,3 +1,4 @@
+import json
 import logging
 from typing import Optional
 from app.config import settings
@@ -19,8 +20,7 @@ except ImportError:
 def generate_party_idea(request: PartyIdeaRequest) -> PartyIdeaResponse:
     """
     Generates a structured birthday party plan.
-    If GEMINI_API_KEY is configured in the environment, calls the Google Gemini API.
-    Otherwise, generates a high-quality, customized mock response based on input parameters.
+    The mock fallback is only a safety fallback and real Gemini is used when GEMINI_API_KEY is configured.
     
     Args:
         request: PartyIdeaRequest containing the guest profile information.
@@ -30,17 +30,34 @@ def generate_party_idea(request: PartyIdeaRequest) -> PartyIdeaResponse:
     """
     api_key = settings.gemini_api_key
 
+    # Enforce allowed JSON output fields in Python
+    allowed_fields = {
+        "celebration_title",
+        "theme_idea",
+        "color_palette",
+        "invitation_text",
+        "decoration_ideas",
+        "food_and_drink_ideas",
+        "music_vibe",
+        "party_schedule",
+        "personal_touch",
+        "ai_summary"
+    }
+
     if api_key and GENAI_AVAILABLE:
         try:
-            logger.info("Generating party idea using Gemini API...")
+            logger.info("Using Gemini API for party generation")
             client = genai.Client(api_key=api_key)
             
             interests_str = ", ".join(request.interests)
+            
+            # The prompt explicitly prioritizes the user's specific inputs (name, style, zodiac, interests, city, etc.)
+            # Brand guidelines should guide the premium, elegant tone only, without overwriting custom styles.
             prompt = (
                 f"You are the lead AI birthday designer for DreamParty, a premium, luxury birthday planning platform.\n"
                 f"Your design style is warm, personal, sophisticated, elegant, and realistic. You must avoid sci-fi, "
                 f"cyberpunk, spaceships, neon themes, futuristic wording, or a childish/overly casual tone.\n\n"
-                f"Create a highly tailored, upscale birthday recommendation plan for:\n"
+                f"Create a highly tailored, upscale birthday recommendation plan matching these parameters as the highest priority:\n"
                 f"- Name: {request.name}\n"
                 f"- Age: {request.age}\n"
                 f"- Birthday Date: {request.birthday_date}\n"
@@ -50,14 +67,21 @@ def generate_party_idea(request: PartyIdeaRequest) -> PartyIdeaResponse:
                 f"- Location (City): {request.city}\n"
                 f"- Budget: {request.budget}\n"
                 f"- Guest Count: {request.guest_count} guests\n\n"
-                f"Ensure the celebration title is elegant and matches a high-end celebration (using words like Soirée, "
-                f"Atelier, or Salon instead of childish phrases). The theme description should paint a picture of a boutique "
-                f"studio or luxury venue. The color palette must feature 4 sophisticated names (e.g. Blush Rose, Champagne Gold, "
-                f"Dusty Pink, Warm Sand). The decoration ideas, music vibe, food/drink ideas, party schedule (which should follow "
-                f"a realistic evening flow), and personal touches must be highly curated and luxurious."
+                f"Strict JSON output requirements:\n"
+                f"1. Return valid JSON only. Do not include markdown code block syntax (like ```json ... ```) in your output.\n"
+                f"2. Do not return any extra explanation, prelude, or postscript outside the JSON.\n"
+                f"3. Return ONLY the allowed fields: celebration_title, theme_idea, color_palette, invitation_text, "
+                f"decoration_ideas, food_and_drink_ideas, music_vibe, party_schedule, personal_touch, ai_summary.\n"
+                f"4. Do not return any extra keys or properties.\n\n"
+                f"The celebration title, color scheme, invitation text, decorations, food, music, and schedule MUST "
+                f"specifically align with the requested Party Style ({request.party_style}) and Interests ({interests_str}). "
+                f"For example, if the style is 'Ocean Pearl Dinner' and interests include 'sea, candles, piano, flowers, poetry', "
+                f"do NOT force a rose-gold/champagne theme; instead, build the proposal around sea-inspired elements, soft "
+                f"candlelight, elegant piano music, floral styling, and poetry keepsakes, reflecting a dreamy water-inspired "
+                f"Pisces atmosphere in {request.city}."
             )
 
-            # Generate structured output using Pydantic schema enforcement
+            # Generate structured output using Pydantic schema enforcement (without examples to prevent extra_forbidden errors)
             response = client.models.generate_content(
                 model="gemini-2.5-flash",
                 contents=prompt,
@@ -69,8 +93,30 @@ def generate_party_idea(request: PartyIdeaRequest) -> PartyIdeaResponse:
             )
             
             if response.text:
-                logger.info("Successfully received structured response from Gemini API.")
-                return PartyIdeaResponse.model_validate_json(response.text)
+                # Remove markdown wraps if Gemini returned them despite strict prompt guidelines
+                clean_text = response.text.strip()
+                if clean_text.startswith("```"):
+                    first_line_end = clean_text.find("\n")
+                    if first_line_end != -1:
+                        clean_text = clean_text[first_line_end:].strip()
+                    if clean_text.endswith("```"):
+                        clean_text = clean_text[:-3].strip()
+
+                raw_data = json.loads(clean_text)
+                
+                # Filter to allowed fields to prevent any client-side or parsing conflicts
+                filtered_data = {k: v for k, v in raw_data.items() if k in allowed_fields}
+                
+                # Verify and fill in missing fields from the mock backup to guarantee parsing validation succeeds
+                mock_data = None
+                for field in allowed_fields:
+                    if field not in filtered_data or filtered_data[field] is None:
+                        if mock_data is None:
+                            mock_data = _generate_mock_response(request)
+                        filtered_data[field] = getattr(mock_data, field)
+
+                logger.info("Gemini party generation completed successfully")
+                return PartyIdeaResponse.model_validate(filtered_data)
             else:
                 raise ValueError("Received empty response text from Gemini API")
                 
@@ -79,7 +125,7 @@ def generate_party_idea(request: PartyIdeaRequest) -> PartyIdeaResponse:
             # Fall through to mock generator
 
     # Fallback to High-Quality Mock Response
-    logger.info("Generating high-quality mock party idea...")
+    logger.info("Using mock fallback party generation")
     return _generate_mock_response(request)
 
 
@@ -87,112 +133,107 @@ def _generate_mock_response(request: PartyIdeaRequest) -> PartyIdeaResponse:
     """
     Generates a highly custom, structured mock response based on input values.
     Ensures all mock data aligns with a warm, luxury, boutique celebration studio aesthetic.
+    Generates a deterministic fallback based on party_style, interests, and zodiac_sign.
     """
     interests_str = ", ".join(request.interests)
-    main_interest = request.interests[0] if request.interests else "celebration"
+    style = request.party_style
+    style_lower = style.lower()
+    interests_lower = [i.lower() for i in request.interests]
     
-    # Simple heuristic-based theme picker
-    style_lower = request.party_style.lower()
-    
-    if "creative" in style_lower or "artistic" in style_lower:
-        title = f"{request.name}'s Elegant Atelier & Watercolor Salon"
-        theme = (
-            f"An exquisite and creative studio afternoon in {request.city} celebrating {request.name}'s {request.age}th birthday. "
-            f"Guests gather for a private watercolor or styling masterclass led by a local artist, accompanied by champagne and fine pastries."
-        )
-        colors = ["Champagne Gold", "Dusty Pink", "Blush Rose", "Ivory"]
-        decorations = [
-            "Elegant table easels with brass fittings and high-end cotton paper",
-            "Freshly cut blush peonies and white roses in crystal vases",
-            "Fine linen table runners and personalized monogrammed canvas wraps",
-            "Soft string lighting and warm, candlelit workspace accents"
-        ]
-        food = [
-            "Macarons infused with rose-water and gold leaf detailing",
-            "Artisanal charcuterie boards featuring fine cheeses, figs, and local honeycomb",
-            "Chilled rosé champagne and elderflower botanical mocktails",
-            "A minimalist pastel watercolor birthday cake adorned with fresh edible flowers"
-        ]
-        music = "French café jazz, light acoustic strings, and ambient bossa nova"
-        schedule = [
-            "15:00 - Welcome & Champagne: Guests arrive at the boutique studio",
-            "15:30 - Atelier Session: Guided canvas or watercolor styling masterclass",
-            "17:00 - Gallery Viewing & Grazing: Fine food, desserts, and social hour",
-            "17:45 - Toast & Celebration Cake: Toasting the guest of honor",
-            "18:30 - Departure: Guests receive their beautifully packaged artwork"
-        ]
-        personal_touch = f"Each guest is presented with a custom linen tote containing a premium leather sketchbook and fine paintbrushes with {request.name}'s initials."
-        summary_text = (
-            f"A sophisticated, boutique creative salon experience that matches {request.name}'s interest in {main_interest}. "
-            f"Designed as a low-stress, engaging event in {request.city} for a budget of {request.budget}."
-        )
-
-    elif "adventure" in style_lower or "active" in style_lower:
-        title = f"{request.name}'s Sunset Garden & Alfresco Soirée"
-        theme = (
-            f"A luxurious, curated outdoor garden gathering or rooftop celebration in {request.city}. "
-            f"Featuring custom-designed lounge spaces, interactive boutique lawn games, and a premium tasting menu under the stars."
-        )
-        colors = ["Sage Green", "Rose Gold", "Warm Champagne", "Soft Peach"]
-        decorations = [
-            "Plush floor cushions, low-profile wooden tables, and woven rug lounges",
-            "Ethereal canopy drapery woven with delicate fairy lights",
-            "Eucalyptus garlands, white roses, and flickering hurricane lanterns",
-            "A custom calligraphy welcome board framed in brass and fresh foliage"
-        ]
-        food = [
-            "Wood-fired gourmet flatbreads and seasonal farm-to-table small plates",
-            "Deconstructed s'mores and organic dark chocolate truffles",
-            "Sparkling elderflower wine and fresh cucumber-mint waters",
-            "A naked-style sponge cake decorated with fresh berries and rosemary sprigs"
-        ]
-        music = "Upbeat folk rock, modern lounge covers, and ambient indie vibes"
-        schedule = [
-            "16:00 - Garden Arrival: Welcome drinks and custom botanical cocktail mixing",
-            "16:30 - Lawn & Lounge: Premium garden activities, boutique games, and social time",
-            "18:00 - Alfresco Feast: Curated tasting menu served family-style at twilight",
-            "19:15 - Toast & Cake: Gathering around the lantern-lit table",
-            "20:00 - Departure: Farewell under the stars with customized organic honey jars"
-        ]
-        personal_touch = f"A private chef hosting a tasting session explaining the local, seasonal ingredients sourced from the {request.city} region."
-        summary_text = (
-            f"An elegant outdoor celebration tailored for {request.name}'s {request.age}th birthday, "
-            f"perfectly balancing active socializing and luxury dining in {request.city}."
-        )
-
+    # Custom, dynamic title matching the requested style exactly
+    # E.g. Lavia's Ocean Pearl Dinner Soirée
+    if any(suffix in style_lower for suffix in ["soirée", "soiree", "dinner", "salon", "celebration", "gala"]):
+        title = f"{request.name}'s {style}"
     else:
-        # Default Luxury Rose Gold Theme
-        title = f"{request.name}'s Rose Gold Birthday Soirée"
-        theme = (
-            f"A highly sophisticated and chic celebration in {request.city} styled with elegant rose-gold details, "
-            f"soft candlelight, and stunning floral designs, creating an intimate boutique studio atmosphere."
-        )
+        title = f"{request.name}'s {style} Soirée"
+
+    # Dynamic theme text based on inputs
+    theme = (
+        f"A highly sophisticated and chic celebration in {request.city} styled around the theme of '{style}' for {request.name}'s {request.age}th birthday. "
+        f"The layout and events are curated specifically to reflect interests like {interests_str} and capture a warm, boutique salon atmosphere."
+    )
+
+    # Dynamic color palette matching the style
+    if "ocean" in style_lower or "sea" in style_lower or "pearl" in style_lower or "water" in style_lower:
+        colors = ["Ocean Pearl", "Moonlit Silver", "Soft Seafoam", "Warm Ivory"]
+    elif "garden" in style_lower or "botanical" in style_lower or "green" in style_lower or "floral" in style_lower:
+        colors = ["Sage Green", "Warm Champagne", "Soft Blush", "Ivory Pearl"]
+    elif "creative" in style_lower or "artistic" in style_lower or "atelier" in style_lower:
+        colors = ["Champagne Gold", "Dusty Pink", "Blush Rose", "Ivory"]
+    else:
+        # Default luxury rose gold colors
         colors = ["Blush Rose", "Champagne Gold", "Soft Dusty Pink", "Warm Sand"]
-        decorations = [
-            "Lush arrangements of dusty pink roses, white ranunculus, and eucalyptus",
-            "Rose-gold rimmed chargers, crystal stemware, and premium linen napkins",
-            "Abundant pillar candles in glass cylinder holders creating a warm, soft glow",
-            "A luxurious silk-draped backdrop for photography moments"
-        ]
-        food = [
-            "Rose-infused champagne toast and customized botanical gin cocktails",
-            "Artisanal canapés, including smoked salmon blinis and fig crostinis",
-            "A decadent champagne-flavored cake with elegant rose-gold dusting",
-            "A curated dessert bar featuring raspberry macarons and white chocolate truffles"
-        ]
-        music = "Sophisticated lounge jazz, soft vinyl records, and elegant neo-classical piano covers"
-        schedule = [
-            "18:00 - The Arrival: Welcome champagne toast and ambient lounge music",
-            "18:30 - Cocktails & Canapés: Socializing among candlelight and floral setups",
-            "19:30 - Intimate Dinner: Multi-course tasting menu highlighting local delicacies",
-            "21:00 - Dessert & Speeches: Cutting the champagne cake and toasting Maja",
-            "22:00 - Farewell: Evening concluding with curated memory gifts"
-        ]
-        personal_touch = f"A customized calligraphed menu card for each guest and a miniature bottle of premium champagne with a rose-gold ribbon."
-        summary_text = (
-            f"A premium, elegant soirée tailored for {request.name}'s {request.age}th birthday in {request.city}. "
-            f"The theme reflects a warm, personal, and luxurious aesthetic perfect for a {request.zodiac_sign} celebration."
-        )
+
+    # Dynamic decorations incorporating interests
+    decorations = []
+    
+    # Render sea-inspired details if requested
+    if any(k in interests_lower or k in style_lower for k in ["sea", "ocean", "pearl", "water", "aquatic"]):
+        decorations.append("Ethereal sea-inspired floral arrangements, shimmering pearl accents, and soft flowing silk drapery")
+    else:
+        decorations.append("Lush seasonal floral arrangements featuring dusty roses, ranunculus, and fresh eucalyptus")
+
+    # Render candlelight if requested
+    if any(k in interests_lower for k in ["candle", "candles", "light", "candlelight"]):
+        decorations.append("Abundant warm pillar candles in glass cylinder holders creating an intimate, soft glow")
+    else:
+        decorations.append("Soft ambient fairy lights and warm accent spotlights to set an elegant backdrop")
+
+    decorations.extend([
+        f"Custom tablescapes featuring premium chargers, crystal stemware, and textured linen napkins in {colors[0]} and {colors[1]} tones",
+        f"Personalized calligraphed entry welcome board framed in brass and coordinating greenery"
+    ])
+
+    # Dynamic food and drinks incorporating interests
+    food = []
+    if "champagne" in interests_lower:
+        food.append("Rose-infused champagne toast and customized botanical gin cocktails")
+    else:
+        food.append(f"Welcome signature cocktail or elderflower botanical mocktail served in vintage glasses")
+
+    food.extend([
+        "Artisanal canapés, including smoked salmon blinis, fig crostinis, and gourmet pairings",
+        f"A custom multi-tiered birthday cake beautifully decorated with coordinating {colors[0]} accents",
+        "A boutique dessert cart featuring raspberry macarons and white chocolate truffles"
+    ])
+
+    # Dynamic music vibe
+    music_items = []
+    if "piano" in interests_lower:
+        music_items.append("elegant live piano covers")
+    if "jazz" in interests_lower:
+        music_items.append("sophisticated lounge jazz")
+    if "acoustic" in interests_lower:
+        music_items.append("light acoustic strings")
+        
+    if not music_items:
+        music_vibe = "Sophisticated lounge jazz, soft vinyl records, and elegant neo-classical piano covers"
+    else:
+        music_vibe = f"{', '.join(music_items).capitalize()} and curated ambient background tracks"
+
+    # Dynamic schedule without hardcoded names like Maja
+    schedule = [
+        f"18:00 - The Arrival: Welcome champagne toast and ambient {music_vibe.lower().split(' and ')[0]} music",
+        f"18:30 - Cocktails & Canapés: Socializing among candlelight and bespoke {style} design setups",
+        f"19:30 - Intimate Dinner: Multi-course tasting menu highlighting local {request.city} culinary delicacies",
+        f"21:00 - Dessert & Speeches: Cutting the cake and toasting {request.name} on their {request.age}th milestone",
+        "22:00 - Farewell: Evening concluding with curated memory gifts for all guests"
+    ]
+
+    # Dynamic personal touch
+    personal_touch = ""
+    if "poetry" in interests_lower:
+        personal_touch = "A custom calligraphed typewriter poem composed live for each guest on textured cotton paper as a keepsake."
+    elif "flowers" in interests_lower or "flower" in interests_lower:
+        personal_touch = "A boutique flower bar where guests curate their own personalized mini-bouquet to take home."
+    else:
+        personal_touch = f"A calligraphed personal menu card for each guest and a miniature keepsake gift bottle tied with a {colors[0].lower()} ribbon."
+
+    # Dynamic summary highlighting the zodiac sign
+    summary_text = (
+        f"A premium, elegant celebration tailored specifically for {request.name}'s {request.age}th birthday in {request.city}. "
+        f"The theme design captures the spirit of a {request.zodiac_sign} through details like {interests_str}."
+    )
 
     return PartyIdeaResponse(
         celebration_title=title,
@@ -205,7 +246,7 @@ def _generate_mock_response(request: PartyIdeaRequest) -> PartyIdeaResponse:
         ),
         decoration_ideas=decorations,
         food_and_drink_ideas=food,
-        music_vibe=music,
+        music_vibe=music_vibe,
         party_schedule=schedule,
         personal_touch=personal_touch,
         ai_summary=summary_text

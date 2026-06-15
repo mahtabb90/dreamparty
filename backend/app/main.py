@@ -42,7 +42,7 @@ def health_check():
     return {
         "status": "healthy",
         "service": "DreamParty Backend",
-        "gemini_api_configured": settings.gemini_api_key is not None
+        "gemini_api_configured": bool(settings.gemini_api_key)
     }
 
 

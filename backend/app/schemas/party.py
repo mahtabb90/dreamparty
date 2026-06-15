@@ -1,11 +1,12 @@
 from typing import List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class PartyIdeaRequest(BaseModel):
     """
     Schema for the party generation request payload.
     """
+    model_config = ConfigDict(extra='ignore')
     name: str = Field(
         ..., 
         description="Name of the birthday person",
@@ -59,65 +60,45 @@ class PartyIdeaResponse(BaseModel):
     """
     Schema for the structured party recommendation response.
     """
+    model_config = ConfigDict(extra='ignore')
+
     celebration_title: str = Field(
         ..., 
-        description="A catchy, premium name for the celebration",
-        examples=["Liam's Cosmic 10th Birthday Blast"]
+        description="A catchy, premium name for the celebration"
     )
     theme_idea: str = Field(
         ..., 
-        description="Detailed description of the theme and overall concept",
-        examples=["A retro space exploration and astronaut training academy experience."]
+        description="Detailed description of the theme and overall concept"
     )
     color_palette: List[str] = Field(
         ..., 
-        description="Recommended color scheme for decorations and invites",
-        examples=[["Deep Navy", "Metallic Silver", "Neon Lime", "Cosmic Black"]]
+        description="Recommended color scheme for decorations and invites"
     )
     invitation_text: str = Field(
         ..., 
-        description="Ready-to-use template text for invitations",
-        examples=["Calling all space cadets! Join Liam for a mission to celebrate his 10th birthday..."]
+        description="Ready-to-use template text for invitations"
     )
     decoration_ideas: List[str] = Field(
         ..., 
-        description="Key visual styling and prop recommendations",
-        examples=[
-            "Hanging glow-in-the-dark stars",
-            "Life-sized cardboard rocket ship cutout",
-            "Silver foil balloons shaped like planets"
-        ]
+        description="Key visual styling and prop recommendations"
     )
     food_and_drink_ideas: List[str] = Field(
         ..., 
-        description="Themed snacks, drinks, and cake suggestions",
-        examples=[
-            "Astronaut freeze-dried ice cream",
-            "Galaxy punch with dry ice smoky effect",
-            "Rocket-shaped mini pizzas"
-        ]
+        description="Themed snacks, drinks, and cake suggestions"
     )
     music_vibe: str = Field(
         ..., 
-        description="Music suggestions to set the atmosphere",
-        examples=["Synthwave beats, space movie soundtracks, and upbeat retro pop"]
+        description="Music suggestions to set the atmosphere"
     )
     party_schedule: List[str] = Field(
         ..., 
-        description="Proposed timeline or event flow for the day",
-        examples=[
-            "14:00 - Launch Control Check-in (Guest Arrival)",
-            "14:30 - Astronaut Academy (Scavenger Hunt)",
-            "16:00 - Refueling Station (Cake & Food)"
-        ]
+        description="Proposed timeline or event flow for the day"
     )
     personal_touch: str = Field(
         ..., 
-        description="A unique, custom highlight that makes it extra memorable",
-        examples=["Custom mission patches with each guest's name on arrival"]
+        description="A unique, custom highlight that makes it extra memorable"
     )
     ai_summary: str = Field(
         ..., 
-        description="A concise summary of why this idea fits the profile perfectly",
-        examples=["A thrilling outer space adventure tailored for a curious 10-year-old Gemini in Seattle who loves science fiction."]
+        description="A concise summary of why this idea fits the profile perfectly"
     )
