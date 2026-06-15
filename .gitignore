@@ -24,3 +24,7 @@ build/
 # OS
 .DS_Store
 Thumbs.db
+
+# Vite cache
+.vite/
+frontend/.vite/
