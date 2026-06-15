@@ -273,6 +273,7 @@ export default function PlannerSuite() {
   const [invTheme, setInvTheme] = useState(INVITATION_THEMES[0]);
   const [invName, setInvName] = useState('AURELIA');
   const [invAge, setInvAge] = useState('25');
+  const [isAgeFocused, setIsAgeFocused] = useState(false);
   const [invVibe, setInvVibe] = useState('Midnight Stars & Golden Bubbles');
   const [invDate, setInvDate] = useState('Saturday, Oct 12th • 9:00 PM');
   const [invVenue, setInvVenue] = useState('The Obsidian Lounge, NYC');
@@ -299,15 +300,15 @@ export default function PlannerSuite() {
   const [newCheckItem, setNewCheckItem] = useState('');
 
   // AI Curation Form State
-  const [aiName, setAiName] = useState('');
+  const [aiName, setAiName] = useState('Aurelia');
   const [aiAge, setAiAge] = useState<string | number>('30');
-  const [aiBirthdate, setAiBirthdate] = useState('2026-06-25');
-  const [aiZodiac, setAiZodiac] = useState('Gemini');
+  const [aiBirthdate, setAiBirthdate] = useState('2026-08-15');
+  const [aiZodiac, setAiZodiac] = useState('Leo');
   const [aiStyle, setAiStyle] = useState('Luxury Rose Gold');
-  const [aiInterests, setAiInterests] = useState('champagne, flowers');
+  const [aiInterests, setAiInterests] = useState('champagne, flowers, live jazz');
   const [aiCity, setAiCity] = useState('Stockholm');
-  const [aiBudget, setAiBudget] = useState('5000 SEK');
-  const [aiGuestCount, setAiGuestCount] = useState<string | number>('20');
+  const [aiBudget, setAiBudget] = useState('15000 SEK');
+  const [aiGuestCount, setAiGuestCount] = useState<string | number>('18');
   const [apiError, setApiError] = useState<string | null>(null);
 
   // AI State
@@ -663,6 +664,8 @@ export default function PlannerSuite() {
     setTimeout(() => setCopiedColor(null), 2000);
   };
 
+  const ageLabel = invAge ? `${invAge}${getOrdinalSuffix(invAge)}` : 'AGE';
+
   return (
     <section id="planner" className="section" style={{ position: 'relative', overflow: 'hidden' }}>
       
@@ -846,9 +849,15 @@ export default function PlannerSuite() {
                     <input 
                       type="text" 
                       placeholder="AGE" 
-                      value={invAge} 
-                      onChange={(e) => setInvAge(e.target.value)} 
-                      maxLength={3} 
+                      value={isAgeFocused ? invAge : ageLabel} 
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        const cleanVal = val.replace(/(st|nd|rd|th)$/i, '');
+                        setInvAge(cleanVal);
+                      }} 
+                      onFocus={() => setIsAgeFocused(true)}
+                      onBlur={() => setIsAgeFocused(false)}
+                      maxLength={10} 
                       style={{
                         background: 'transparent',
                         border: 'none',
@@ -859,15 +868,11 @@ export default function PlannerSuite() {
                         fontSize: '1.2rem',
                         textAlign: 'center',
                         padding: '0 0.2rem',
-                        width: '55px',
+                        width: '75px',
                         outline: 'none',
                       }}
-                    />{!isNaN(parseInt(invAge, 10)) && (
-                      <span style={{ fontSize: '0.8rem', verticalAlign: 'super', color: 'var(--color-primary)', marginLeft: '-2px', marginRight: '3px', fontWeight: 700 }}>
-                        {getOrdinalSuffix(invAge)}
-                      </span>
-                    )}
-                    <span>{isNaN(parseInt(invAge, 10)) ? ' milestone' : ' birthday'}. Let's gather under a vibe of </span>
+                    />
+                    <span> birthday. Let's gather under a vibe of </span>
                     <input 
                       type="text" 
                       placeholder="Midnight Stars & Golden Bubbles" 
@@ -1497,9 +1502,9 @@ export default function PlannerSuite() {
                       />
                     </div>
 
-                    {/* Birthday Date */}
+                    {/* Celebration Date */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                      <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#94a3b8' }}>Birthday Date</label>
+                      <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#94a3b8' }}>Celebration Date</label>
                       <input 
                         type="date" 
                         className="glass-input" 
