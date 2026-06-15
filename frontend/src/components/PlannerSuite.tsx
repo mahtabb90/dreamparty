@@ -215,7 +215,16 @@ const getZodiacDetails = (dateStr: string) => {
 };
 
 
-
+const getOrdinalSuffix = (ageStr: string) => {
+  const num = parseInt(ageStr, 10);
+  if (isNaN(num)) return '';
+  const j = num % 10;
+  const k = num % 100;
+  if (j === 1 && k !== 11) return 'st';
+  if (j === 2 && k !== 12) return 'nd';
+  if (j === 3 && k !== 13) return 'rd';
+  return 'th';
+};
 // Zodiac Preset details for interactive constellation map
 const ZODIAC_PRESETS = [
   { sign: 'Aries', icon: '♈', date: '2001-04-05', range: 'Mar 21 - Apr 19' },
@@ -457,6 +466,196 @@ export default function PlannerSuite() {
     setTimeout(() => setInviteSaved(false), 3000);
   };
 
+  // Save & Download PNG using HTML5 Canvas
+  const handleDownloadPNG = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 800;
+    canvas.height = 1125;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // 1. Draw Background Gradient matching current theme
+    const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    if (invTheme.id === 'midnight') {
+      grad.addColorStop(0, '#09090b');
+      grad.addColorStop(0.5, '#1c1215');
+      grad.addColorStop(1, '#2e171d');
+    } else if (invTheme.id === 'gold') {
+      grad.addColorStop(0, '#0f0e0f');
+      grad.addColorStop(1, '#221c17');
+    } else if (invTheme.id === 'cyberpunk') {
+      grad.addColorStop(0, '#120e10');
+      grad.addColorStop(1, '#2b1c20');
+    } else { // sunset / rose quartz
+      grad.addColorStop(0, '#26161a');
+      grad.addColorStop(0.5, '#4a212a');
+      grad.addColorStop(1, '#632c38');
+    }
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // 2. Draw Soft Radial Ambient Glow
+    const glowColor = invTheme.glowColor || 'rgba(200, 122, 144, 0.3)';
+    const radialGlow = ctx.createRadialGradient(canvas.width / 2, 450, 100, canvas.width / 2, 450, 450);
+    radialGlow.addColorStop(0, glowColor);
+    radialGlow.addColorStop(1, 'transparent');
+    ctx.fillStyle = radialGlow;
+    ctx.beginPath();
+    ctx.arc(canvas.width / 2, 450, 450, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 3. Elegant Double Border Frame (Rose Gold / Champagne Gold tones)
+    ctx.strokeStyle = invTheme.accentColor;
+    ctx.lineWidth = 4;
+    ctx.strokeRect(40, 40, canvas.width - 80, canvas.height - 80);
+
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(50, 50, canvas.width - 100, canvas.height - 100);
+
+    // Decorative corner diamonds/crosses
+    const drawCornerCross = (cx: number, cy: number, size: number) => {
+      ctx.strokeStyle = invTheme.accentColor;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(cx - size, cy);
+      ctx.lineTo(cx + size, cy);
+      ctx.moveTo(cx, cy - size);
+      ctx.lineTo(cx, cy + size);
+      ctx.stroke();
+    };
+    drawCornerCross(40, 40, 10);
+    drawCornerCross(canvas.width - 40, 40, 10);
+    drawCornerCross(40, canvas.height - 40, 10);
+    drawCornerCross(canvas.width - 40, canvas.height - 40, 10);
+
+    // 4. Text Content Rendering
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    const fontSerif = 'Playfair Display, Georgia, Times New Roman, serif';
+    const fontSans = 'Montserrat, Arial, sans-serif';
+
+    // Header "YOU'RE INVITED"
+    ctx.fillStyle = invTheme.accentColor;
+    ctx.font = 'bold 22px ' + fontSerif;
+    if ('letterSpacing' in ctx) {
+      (ctx as any).letterSpacing = '6px';
+    }
+    ctx.fillText("YOU'RE INVITED TO CELEBRATE", canvas.width / 2, 180);
+    if ('letterSpacing' in ctx) {
+      (ctx as any).letterSpacing = 'normal';
+    }
+
+    // Name
+    ctx.fillStyle = invTheme.titleColor;
+    ctx.font = '700 56px ' + fontSerif;
+    ctx.fillText(invName || 'AURELIA', canvas.width / 2, 280);
+
+    // "Celebrating Their" / "Celebrating This"
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+    ctx.font = 'italic 18px Georgia, serif';
+    const celebrationHeader = isNaN(parseInt(invAge, 10)) ? "Celebrating This" : "Celebrating Their";
+    ctx.fillText(celebrationHeader.toUpperCase(), canvas.width / 2, 380);
+
+    // Age
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '900 135px ' + fontSans;
+    const ageVal = invAge || '00';
+    ctx.fillText(ageVal, canvas.width / 2 - 20, 490);
+
+    // Dynamic Suffix next to Age
+    const suffix = getOrdinalSuffix(ageVal);
+    if (suffix) {
+      ctx.fillStyle = invTheme.accentColor;
+      ctx.font = '700 38px ' + fontSans;
+      const ageWidth = ctx.measureText(ageVal).width;
+      ctx.fillText(suffix, canvas.width / 2 + (ageWidth / 2) - 10, 435);
+    }
+
+    // "Milestone" / "Birthday"
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+    ctx.font = 'italic 18px Georgia, serif';
+    const celebrationFooter = isNaN(parseInt(invAge, 10)) ? "MILESTONE" : "BIRTHDAY";
+    ctx.fillText(celebrationFooter, canvas.width / 2, 600);
+
+    // Divider Line
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(canvas.width / 2 - 120, 640);
+    ctx.lineTo(canvas.width / 2 + 120, 640);
+    ctx.stroke();
+
+    // Vibe Quote wrapping helper
+    const wrapText = (textStr: string, xPos: number, yPos: number, maxW: number, lineH: number) => {
+      const words = textStr.split(' ');
+      let currentLine = '';
+      let currentY = yPos;
+      for (let n = 0; n < words.length; n++) {
+        const testLine = currentLine + words[n] + ' ';
+        const metrics = ctx.measureText(testLine);
+        const testWidth = metrics.width;
+        if (testWidth > maxW && n > 0) {
+          ctx.fillText(currentLine, xPos, currentY);
+          currentLine = words[n] + ' ';
+          currentY += lineH;
+        } else {
+          currentLine = testLine;
+        }
+      }
+      ctx.fillText(currentLine, xPos, currentY);
+    };
+
+    // Vibe Quote wrapping
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'italic 26px Georgia, serif';
+    const quote = `"${invVibe || 'Midnight Stars & Golden Bubbles'}"`;
+    wrapText(quote, canvas.width / 2, 700, 620, 40);
+
+    // Divider Line
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+    ctx.beginPath();
+    ctx.moveTo(canvas.width / 2 - 120, 810);
+    ctx.lineTo(canvas.width / 2 + 120, 810);
+    ctx.stroke();
+
+    // Date
+    ctx.fillStyle = invTheme.accentColor;
+    ctx.font = '700 24px ' + fontSerif;
+    ctx.fillText(invDate || 'Saturday, Oct 12th • 9:00 PM', canvas.width / 2, 870);
+
+    // Venue Location
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+    ctx.font = '19px ' + fontSans;
+    ctx.fillText(invVenue || 'The Obsidian Lounge, NYC', canvas.width / 2, 925);
+
+    // Custom Atelier signature watermark
+    ctx.fillStyle = invTheme.accentColor;
+    ctx.font = 'italic 16px Georgia, serif';
+    if ('letterSpacing' in ctx) {
+      (ctx as any).letterSpacing = '3px';
+    }
+    ctx.fillText("✦ DREAM PARTY CELEBRATION ✦", canvas.width / 2, 1040);
+    if ('letterSpacing' in ctx) {
+      (ctx as any).letterSpacing = 'normal';
+    }
+
+    // Trigger Save & Download
+    try {
+      const dataUrl = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = `${invName.toLowerCase().replace(/\s+/g, '_')}_birthday_invitation.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error("Failed to generate and download PNG image:", err);
+    }
+
+    // Trigger visual state saved feedback
+    handleSaveInvite();
+  };
+
   // Copy hex color to clipboard
   const handleCopyColor = (color: string) => {
     navigator.clipboard.writeText(color);
@@ -643,7 +842,7 @@ export default function PlannerSuite() {
                         outline: 'none',
                       }}
                     />
-                    <span> as they celebrate their </span>
+                    <span> as they celebrate {isNaN(parseInt(invAge, 10)) ? 'this' : 'their'} </span>
                     <input 
                       type="text" 
                       placeholder="AGE" 
@@ -663,8 +862,12 @@ export default function PlannerSuite() {
                         width: '55px',
                         outline: 'none',
                       }}
-                    />
-                    <span> milestone. Let's gather under a vibe of </span>
+                    />{!isNaN(parseInt(invAge, 10)) && (
+                      <span style={{ fontSize: '0.8rem', verticalAlign: 'super', color: 'var(--color-primary)', marginLeft: '-2px', marginRight: '3px', fontWeight: 700 }}>
+                        {getOrdinalSuffix(invAge)}
+                      </span>
+                    )}
+                    <span>{isNaN(parseInt(invAge, 10)) ? ' milestone' : ' birthday'}. Let's gather under a vibe of </span>
                     <input 
                       type="text" 
                       placeholder="Midnight Stars & Golden Bubbles" 
@@ -729,9 +932,9 @@ export default function PlannerSuite() {
                   </div>
 
                   <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
-                    <button onClick={handleSaveInvite} className="btn btn-primary" style={{ padding: '0.7rem 1.5rem', fontSize: '0.88rem' }}>
+                    <button onClick={handleDownloadPNG} className="btn btn-primary" style={{ padding: '0.7rem 1.5rem', fontSize: '0.88rem' }}>
                       {inviteSaved ? <CheckCircle2 size={16} /> : <Download size={16} />}
-                      <span>{inviteSaved ? 'Saved to Templates!' : 'Save & Download'}</span>
+                      <span>{inviteSaved ? 'Saved & Downloaded!' : 'Save & Download'}</span>
                     </button>
                   </div>
                 </div>
@@ -782,7 +985,11 @@ export default function PlannerSuite() {
                         <p style={{ fontSize: '0.75rem', textTransform: 'uppercase', opacity: 0.6, margin: '0.2rem 0' }}>Celebrating Their</p>
                         <h2 style={{ fontSize: '3.6rem', fontWeight: 900, color: '#fff', lineHeight: 1, letterSpacing: '-0.02em', filter: 'drop-shadow(0 0 12px rgba(255,255,255,0.1))' }}>
                           {invAge || '00'}
-                          <span style={{ fontSize: '1.5rem', verticalAlign: 'super', fontWeight: 700 }}>th</span>
+                          {invAge && !isNaN(parseInt(invAge, 10)) && (
+                            <span style={{ fontSize: '1.5rem', verticalAlign: 'super', fontWeight: 700 }}>
+                              {getOrdinalSuffix(invAge)}
+                            </span>
+                          )}
                         </h2>
                       </div>
                       

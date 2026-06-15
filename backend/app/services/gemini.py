@@ -119,6 +119,12 @@ def generate_party_idea(request: PartyIdeaRequest) -> PartyIdeaResponse:
                 f"- Location (City): {request.city}\n"
                 f"- Budget: {request.budget}\n"
                 f"- Guest Count: {request.guest_count} guests\n\n"
+                f"Strict Quality Requirements:\n"
+                f"1. DO NOT use any brackets or placeholders (e.g., do NOT output '[Private Venue]', '[Date]', '[Contact Information]', '[RSVP]', '[Insert Name]', '[Venue Name]'). Every single string must be fully realized, concrete, and complete.\n"
+                f"2. Utilize the actual user inputs supplied above (like the name '{request.name}', the city '{request.city}', the birthday date '{request.birthday_date}', the zodiac sign '{request.zodiac_sign}') to personalize the entire copy.\n"
+                f"3. If venue, contact, or RSVP details are needed in the invitation_text, generate realistic and elegant luxury examples matching the city '{request.city}' (for example, 'The Grand Atelier, {request.city}' or 'RSVP to Aurelia').\n"
+                f"4. The invitation_text must be written as a finished, production-ready, beautiful and grammatically correct invitation card copy.\n"
+                f"5. Maintain a luxury, romantic, elegant, magical, and premium brand voice. Avoid cyberpunk, sci-fi, childish, generic SaaS, or neon-tech language.\n\n"
                 f"Strict JSON output requirements:\n"
                 f"1. Return valid JSON only. Do not include markdown code block syntax (like ```json ... ```) in your output.\n"
                 f"2. Do not return any extra explanation, prelude, or postscript outside the JSON.\n"
@@ -126,11 +132,7 @@ def generate_party_idea(request: PartyIdeaRequest) -> PartyIdeaResponse:
                 f"decoration_ideas, food_and_drink_ideas, music_vibe, party_schedule, personal_touch, ai_summary.\n"
                 f"4. Do not return any extra keys or properties.\n\n"
                 f"The celebration title, color scheme, invitation text, decorations, food, music, and schedule MUST "
-                f"specifically align with the requested Party Style ({request.party_style}) and Interests ({interests_str}). "
-                f"For example, if the style is 'Ocean Pearl Dinner' and interests include 'sea, candles, piano, flowers, poetry', "
-                f"do NOT force a rose-gold/champagne theme; instead, build the proposal around sea-inspired elements, soft "
-                f"candlelight, elegant piano music, floral styling, and poetry keepsakes, reflecting a dreamy water-inspired "
-                f"Pisces atmosphere in {request.city}."
+                f"specifically align with the requested Party Style ({request.party_style}) and Interests ({interests_str})."
             )
 
             # Generate structured output using Pydantic schema enforcement (without examples to prevent extra_forbidden errors)
