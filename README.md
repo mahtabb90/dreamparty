@@ -2,64 +2,167 @@
 
 **DreamParty** is a premium AI-powered birthday celebration and invitation planning web application.
 
-It helps users create personalized birthday celebration plans, discover elegant themes, generate invitation text, and turn simple party details into a beautiful celebration concept using AI.
+It helps users generate personalized birthday celebration concepts, elegant invitation text, theme ideas, color palettes, party schedules, food and drink suggestions, music vibes, and downloadable invitation previews using AI.
+
+DreamParty is designed as a polished fullstack AI portfolio project that combines product design, frontend development, backend architecture, and real AI integration.
 
 ---
 
 ## ✨ Overview
 
-DreamParty is designed as a luxury birthday planning experience, combining:
+DreamParty turns simple celebration details into a refined birthday planning experience.
 
-* AI-powered celebration recommendations
-* personalized invitation ideas
-* theme and color palette generation
-* party schedule planning
-* decor, food, drink and music suggestions
-* elegant invitation preview flow
+Users can enter details such as name, age, celebration date, zodiac sign, party style, interests, location, budget, and guest count. The app then generates a personalized celebration plan using Gemini AI through a FastAPI backend.
 
-The goal is to create a fullstack AI portfolio project that feels polished, creative and product-focused — not just a technical demo.
+The generated result can be sent into the **Invitation Atelier**, where users can preview and download a styled birthday invitation.
+
+The goal of this project is not only to demonstrate technical implementation, but also to show how AI can be integrated into a creative, human-centered product experience.
 
 ---
 
 ## 🌹 Visual Identity
 
-DreamParty has a premium celebration atelier style:
+DreamParty uses a luxury celebration atelier style:
 
-* dark wine / soft black background
+* dark wine and soft black backgrounds
 * dusty pink
 * rose gold
 * champagne gold
 * blush tones
 * elegant serif typography
-* luxury invitation studio feeling
+* premium invitation studio feeling
+* romantic and boutique-inspired product experience
 
-The design is inspired by premium event brands, boutique invitation studios and romantic celebration planning.
+The design direction is inspired by premium event brands, luxury invitation studios, and elegant celebration planning.
+
+DreamParty is intentionally designed to feel different from a generic AI dashboard. The product experience is elegant, emotional, visual, and celebration-focused.
 
 ---
 
-## 🚀 Features
+## 🚀 Key Features
 
-### 🎂 AI Celebration Planner
+### 🌹 Luxury Landing Experience
 
-Users can enter birthday details such as:
+DreamParty starts with a premium landing page designed to feel like a boutique celebration atelier.
 
-* name
+The landing experience includes:
+
+* custom DreamParty visual branding
+* luxury dark wine and blush color palette
+* invitation mockup hero illustration
+* clear call-to-action buttons
+* elegant event-focused product storytelling
+
+---
+
+### 🧭 How It Works
+
+The app includes a simplified product journey that explains the user flow:
+
+1. Enter celebration details
+2. Discover theme vibes
+3. Generate party ideas with AI
+4. Create and download a personalized invitation
+
+This section helps the project feel like a real product, not only a technical demo.
+
+---
+
+### 🎂 Celebration Planner Suite
+
+DreamParty includes an interactive planning suite with multiple product areas:
+
+* Invitation Atelier
+* Theme Curator
+* Celestial Inspiration
+* Celebration Planner
+* Party Magic
+
+This gives the app a complete celebration-planning experience from idea generation to final invitation creation.
+
+---
+
+### 💌 Invitation Atelier
+
+The Invitation Atelier lets users create a luxury birthday invitation preview.
+
+It includes:
+
+* honoree name
+* age with correct birthday grammar
+* celebration date
+* venue/location
+* celebration vibe
+* styled invitation card preview
+* PNG download functionality
+
+Generated AI results can be transferred directly into the Invitation Atelier.
+
+---
+
+### 🎨 Theme Curator
+
+The Theme Curator helps users explore luxury party aesthetics.
+
+It includes:
+
+* curated theme concepts
+* color palettes
+* decor suggestions
+* music and soundscape ideas
+* copyable color inspiration
+
+This feature supports the visual and creative direction of the celebration.
+
+---
+
+### ✨ Celestial Inspiration
+
+DreamParty includes a zodiac-inspired planning feature where users can explore constellation-based celebration ideas.
+
+The feature includes:
+
+* zodiac sign selection
+* date-based zodiac alignment
+* celestial theme proposal
+* aesthetic vibe
+* signature cocktail idea
+* key celebration activity
+* option to send the idea into the invitation creator
+
+This adds a magical and personalized layer to the product experience.
+
+---
+
+### ✅ Checklist Party Planner
+
+The app includes a party planning checklist where users can:
+
+* check and uncheck planning tasks
+* add custom tasks
+* remove tasks
+* reset progress
+* track planning progress visually
+
+This makes DreamParty feel more like a useful planning tool, not only an AI generator.
+
+---
+
+### 🤖 Party Magic — AI Celebration Generator
+
+The Party Magic section uses Gemini AI through a FastAPI backend to generate personalized celebration plans.
+
+Users can enter:
+
+* honoree name
 * age
-* birthday date
+* celebration date
 * zodiac sign
 * party style
-* interests
-* city
+* location
 * budget
 * guest count
-
-The AI then generates a personalized celebration plan.
-
----
-
-### 🤖 Gemini AI Integration
-
-DreamParty uses Google Gemini through a FastAPI backend.
+* interests and hobbies
 
 The AI can generate:
 
@@ -74,26 +177,66 @@ The AI can generate:
 * personal touch
 * AI summary
 
-A mock fallback is also included so the app can still respond safely if the AI service is temporarily unavailable.
+The result is rendered in the frontend and can be sent into the Invitation Atelier.
 
 ---
 
-### 💌 Invitation Atelier
+### 🖼️ Premium Design Gallery
 
-Generated AI results can be sent into the Invitation Atelier, where the app creates an invitation-style preview based on the celebration plan.
+DreamParty includes a design gallery with sample invitation layouts.
+
+Users can browse polished invitation examples and load selected designs into the editor.
+
+This gives the app a stronger product feeling and shows attention to visual design and user experience.
 
 ---
 
-### 🎨 Theme & Style Inspiration
+### 📥 Save & Download
 
-The app includes curated visual directions such as:
+Users can download their invitation as a PNG image.
 
-* romantic blush
-* champagne elegance
-* rose quartz
-* midnight velvet
-* luxury rose gold
-* ocean pearl dinner concepts
+The export is created using an HTML5 canvas-based solution, allowing the app to generate a polished invitation file directly in the browser without relying on external export services.
+
+---
+
+### 🪄 One-Click Dream Atmospheres
+
+The app includes one-click atmosphere presets that can pre-fill the AI planner with curated celebration ideas.
+
+Examples include:
+
+* cozy glamping campfire
+* velvet jazz lounge
+* blush sunset oasis
+
+This makes the planning flow faster, more visual, and more inspiring for users.
+
+---
+
+## 🤖 AI Integration
+
+DreamParty uses **Google Gemini** through a secure FastAPI backend.
+
+The frontend never receives or exposes the Gemini API key. All AI requests are handled through the backend.
+
+The backend is responsible for:
+
+* receiving the frontend request
+* validating the request with Pydantic
+* calling Gemini AI
+* validating and shaping the AI response
+* returning structured data to the frontend
+* using fallback handling if the AI service is temporarily unavailable
+
+---
+
+## 🛡️ AI Reliability & Fallback Handling
+
+The backend includes reliability handling for temporary Gemini API issues.
+
+If Gemini is temporarily unavailable, overloaded, or returns a temporary error, the backend can safely fall back to a curated mock response so the user experience does not break.
+
+This improves the stability of the application and demonstrates production-aware AI integration.
 
 ---
 
@@ -106,6 +249,7 @@ The app includes curated visual directions such as:
 * Vite
 * Custom CSS
 * Responsive UI
+* HTML5 Canvas for PNG export
 
 ### Backend
 
@@ -119,7 +263,17 @@ The app includes curated visual directions such as:
 * Google Gemini API
 * `google-genai` SDK
 * Environment-variable based API key handling
-* Safe mock fallback
+* Structured AI response validation
+* Safe fallback response handling
+
+### Development Tools
+
+* Git
+* GitHub
+* VS Code / Antigravity IDE
+* Local environment variables
+* Vite development server
+* FastAPI local server
 
 ---
 
@@ -132,13 +286,17 @@ dreamparty/
 │   │   ├── main.py
 │   │   ├── config.py
 │   │   └── services/
+│   │       └── gemini.py
 │   ├── requirements.txt
-│   └── .env.example
+│   ├── .env.example
+│   └── README.md
 │
 ├── frontend/
 │   ├── src/
 │   │   ├── components/
+│   │   │   └── PlannerSuite.tsx
 │   │   └── services/
+│   │       └── partyApi.ts
 │   ├── package.json
 │   └── .env.example
 │
@@ -157,7 +315,7 @@ Create a local `.env` file inside the `backend/` folder:
 GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
-The real `.env` file should never be committed.
+The real `.env` file must never be committed.
 
 ---
 
@@ -169,7 +327,9 @@ Create a local `.env.local` file inside the `frontend/` folder:
 VITE_API_BASE_URL=http://127.0.0.1:8010
 ```
 
-The API URL can be changed depending on which port the backend is running on.
+The API URL should match the backend port used locally.
+
+For production deployment, this value should point to the deployed backend URL.
 
 ---
 
@@ -189,7 +349,7 @@ Check backend health:
 curl http://127.0.0.1:8010/health
 ```
 
-Expected response:
+Expected response when Gemini is configured:
 
 ```json
 {
@@ -214,20 +374,37 @@ Then open the local Vite URL in the browser.
 
 ---
 
+## 🧪 Build Check
+
+To verify the frontend production build:
+
+```bash
+cd frontend
+npm run build
+```
+
+---
+
 ## 🧠 AI Flow
 
 ```text
-User fills birthday details
+User enters celebration details
         ↓
-Frontend sends request to FastAPI
+Frontend sends request to FastAPI backend
+        ↓
+Backend validates request with Pydantic
         ↓
 Backend calls Gemini API
         ↓
-Gemini returns structured celebration plan
+Gemini returns a structured celebration plan
         ↓
-Frontend displays the result in a luxury UI
+Backend validates and returns the response
         ↓
-User can send the result to Invitation Atelier
+Frontend displays the AI result in a premium UI
+        ↓
+User sends result to Invitation Atelier
+        ↓
+User previews and downloads the invitation
 ```
 
 ---
@@ -236,45 +413,83 @@ User can send the result to Invitation Atelier
 
 DreamParty currently includes:
 
-* premium frontend design
+* premium React + TypeScript frontend
+* custom luxury visual design
+* responsive landing page structure
+* Celebration Planner Suite with multiple interactive tabs
+* Invitation Atelier
+* Theme Curator
+* Celestial Inspiration zodiac feature
+* Party Planner checklist with custom tasks
+* One-click dream atmosphere presets
+* Design Gallery with invitation examples
 * FastAPI backend
+* Pydantic request and response schemas
 * Gemini AI integration
-* fallback response handling
-* frontend-backend connection
-* generated celebration plan UI
-* Send to Invitation Atelier flow
+* AI fallback handling
+* frontend-backend API connection
+* structured AI celebration plan rendering
+* transfer from AI result to Invitation Atelier
+* PNG invitation download
+* secure environment variable handling
+
+The project is currently in a polished MVP / pre-deployment stage.
 
 ---
 
 ## 🔮 Future Improvements
 
-Planned next steps:
+Planned next improvements:
 
-* improve Gemini retry logic for temporary API errors
-* polish AI output and remove placeholder text
-* improve invitation grammar and formatting
-* implement real Save & Download functionality
-* add authentication in a later version
-* add saved parties and user dashboard
-* deploy frontend and backend
+* deploy backend on Render
+* deploy frontend on Vercel
+* connect production frontend to production backend
+* test the full live AI flow in production
+* improve mobile responsiveness further
+* add saved celebration history
+* add user authentication in a later version
+* add user dashboard for saved parties
+* add more invitation templates
+* add more advanced AI personalization
+* create a public portfolio case study
 
 ---
 
 ## 👩‍💻 My Role
 
-I designed and built DreamParty as a fullstack AI portfolio project, including:
+I designed and built DreamParty as a fullstack AI portfolio project.
+
+My work included:
 
 * product idea and feature planning
-* premium UI direction
-* React frontend structure
+* UX and premium visual direction
+* React and TypeScript frontend development
+* custom CSS styling
 * FastAPI backend architecture
+* Pydantic request and response schemas
 * Gemini API integration
-* frontend-backend connection
-* AI response rendering
+* AI prompt refinement
+* frontend-backend API connection
+* fallback handling for AI availability issues
+* invitation preview and PNG download functionality
+* checklist planner functionality
 * secure environment variable handling
+* local testing and pre-deployment preparation
 
 ---
 
 ## 🌟 Project Goal
 
-DreamParty demonstrates how AI can be used in a creative, human-centered product experience — combining design, personalization, backend development and real AI integration in one polished portfolio project.
+DreamParty demonstrates how AI can be used in a creative and emotionally engaging product experience.
+
+The project combines:
+
+* AI integration
+* fullstack development
+* backend API design
+* frontend product design
+* user experience thinking
+* secure configuration handling
+* premium visual presentation
+
+DreamParty is built to show how an AI-powered product can feel polished, personal, and useful — not only technically functional.
