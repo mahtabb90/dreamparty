@@ -6,6 +6,9 @@ venv/
 
 # Environment variables
 .env
+.env.local
+backend/.env
+frontend/.env.local
 
 # Database
 *.db
@@ -28,3 +31,8 @@ Thumbs.db
 # Vite cache
 .vite/
 frontend/.vite/
+
+# Keep examples
+!.env.example
+!backend/.env.example
+!frontend/.env.example
