@@ -1655,9 +1655,8 @@ export default function PlannerSuite() {
 
                   {!aiLoading && aiOutput && (
                     <div 
-                      className="glass-card animate-fade-in" 
+                      className="glass-card animate-fade-in ai-output-container" 
                       style={{
-                        padding: '2rem',
                         border: '1px solid rgba(222, 195, 157, 0.25)',
                         backgroundColor: 'rgba(22, 16, 18, 0.45)',
                         boxShadow: '0 20px 50px rgba(0, 0, 0, 0.65)',
@@ -1680,10 +1679,10 @@ export default function PlannerSuite() {
                       </div>
 
                       {/* Content Grid */}
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }} className="ai-results-grid">
+                      <div className="ai-results-grid">
                         
                         {/* Left column: Theme details, swatches, summary */}
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', minWidth: 0 }} className="ai-results-col">
                           
                           {/* Theme Idea */}
                           <div>
@@ -1741,12 +1740,22 @@ export default function PlannerSuite() {
                         </div>
 
                         {/* Right column: Invitation, decor, food, music, timeline */}
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', minWidth: 0 }} className="ai-results-col">
                           
                           {/* Invitation Card */}
-                          <div style={{ backgroundColor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', padding: '1.25rem', borderRadius: '14px', position: 'relative' }}>
+                          <div 
+                            className="invitation-text-card"
+                            style={{ 
+                              backgroundColor: 'rgba(255,255,255,0.02)', 
+                              border: '1px solid rgba(255,255,255,0.05)', 
+                              padding: '1.25rem', 
+                              borderRadius: '14px', 
+                              position: 'relative',
+                              minWidth: 0
+                            }}
+                          >
                             <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '0.5rem' }}>Elegant Invitation Text</span>
-                            <p style={{ fontSize: '0.85rem', color: '#cbd5e1', lineHeight: '1.6', margin: 0, fontStyle: 'italic', paddingRight: '2rem' }}>
+                            <p style={{ fontSize: '0.85rem', color: '#cbd5e1', lineHeight: '1.6', margin: 0, fontStyle: 'italic', paddingRight: '2rem', overflowWrap: 'break-word', wordBreak: 'break-word' }}>
                               "{aiOutput.invitation_text}"
                             </p>
                             <button
@@ -1774,9 +1783,9 @@ export default function PlannerSuite() {
                           </div>
 
                           {/* Decor & Catering split */}
-                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }} className="split-details-grid">
+                          <div className="split-details-grid">
                             
-                            <div style={{ backgroundColor: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', padding: '1.15rem', borderRadius: '12px' }}>
+                            <div style={{ backgroundColor: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', padding: '1.15rem', borderRadius: '12px', minWidth: 0 }}>
                               <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '0.5rem' }}>Decor Plan</span>
                               <ul style={{ listStyleType: 'none', display: 'flex', flexDirection: 'column', gap: '0.4rem', paddingLeft: 0, margin: 0 }}>
                                 {aiOutput.decoration_ideas.map((idea, i) => (
@@ -1788,7 +1797,7 @@ export default function PlannerSuite() {
                               </ul>
                             </div>
 
-                            <div style={{ backgroundColor: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', padding: '1.15rem', borderRadius: '12px' }}>
+                            <div style={{ backgroundColor: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', padding: '1.15rem', borderRadius: '12px', minWidth: 0 }}>
                               <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '0.5rem' }}>Catering Menu</span>
                               <ul style={{ listStyleType: 'none', display: 'flex', flexDirection: 'column', gap: '0.4rem', paddingLeft: 0, margin: 0 }}>
                                 {aiOutput.food_and_drink_ideas.map((item, i) => (
@@ -1803,14 +1812,14 @@ export default function PlannerSuite() {
                           </div>
 
                           {/* Music & Personal Touch */}
-                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }} className="split-details-grid">
+                          <div className="split-details-grid">
                             
-                            <div style={{ backgroundColor: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', padding: '1.15rem', borderRadius: '12px' }}>
+                            <div style={{ backgroundColor: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', padding: '1.15rem', borderRadius: '12px', minWidth: 0 }}>
                               <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '0.35rem' }}>Music Vibe</span>
                               <p style={{ fontSize: '0.82rem', color: '#cbd5e1', margin: 0, lineHeight: '1.4' }}>{aiOutput.music_vibe}</p>
                             </div>
 
-                            <div style={{ backgroundColor: 'rgba(222, 195, 157, 0.01)', border: '1px dashed rgba(222, 195, 157, 0.25)', padding: '1.15rem', borderRadius: '12px' }}>
+                            <div style={{ backgroundColor: 'rgba(222, 195, 157, 0.01)', border: '1px dashed rgba(222, 195, 157, 0.25)', padding: '1.15rem', borderRadius: '12px', minWidth: 0 }}>
                               <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '0.35rem' }}>Signature Highlight</span>
                               <p style={{ fontSize: '0.82rem', color: '#cbd5e1', margin: 0, lineHeight: '1.4' }}>{aiOutput.personal_touch}</p>
                             </div>
@@ -1828,7 +1837,7 @@ export default function PlannerSuite() {
                                     <div style={{ minWidth: '60px', fontWeight: 700, color: 'var(--color-primary)', fontSize: '0.82rem' }}>
                                       {parts[0]}
                                     </div>
-                                    <div style={{ fontSize: '0.82rem', color: '#cbd5e1', flex: 1 }}>
+                                    <div style={{ fontSize: '0.82rem', color: '#cbd5e1', flex: 1, overflowWrap: 'break-word', wordBreak: 'break-word' }}>
                                       {parts[1] || slot}
                                     </div>
                                   </div>
@@ -1964,6 +1973,20 @@ export default function PlannerSuite() {
           }
         }
 
+        .ai-output-container {
+          padding: 2rem;
+        }
+        .ai-results-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 2rem;
+        }
+        .split-details-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 1.25rem;
+        }
+
         @media (min-width: 768px) {
           .invitation-editor-wrapper {
             grid-column: span 1;
@@ -2004,10 +2027,31 @@ export default function PlannerSuite() {
           .constellation-wheel {
             grid-template-columns: repeat(3, 1fr) !important;
           }
+          .ai-results-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1.5rem !important;
+          }
+          .split-details-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .ai-output-container {
+            padding: 1.25rem !important;
+            gap: 1.5rem !important;
+          }
         }
         @media (max-width: 480px) {
           .constellation-wheel {
             grid-template-columns: repeat(2, 1fr) !important;
+          }
+          .planner-main-panel {
+            padding: 0.75rem !important;
+          }
+          .ai-output-container {
+            padding: 0.85rem !important;
+            gap: 1.25rem !important;
+          }
+          .split-details-grid {
+            gap: 0.85rem !important;
           }
         }
       `}</style>
