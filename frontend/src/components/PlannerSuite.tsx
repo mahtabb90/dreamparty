@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Wand2, Plus, Trash2, CheckCircle2, Copy, Sparkles, Download, RefreshCw } from 'lucide-react';
+import { Wand2, Plus, Trash2, CheckCircle2, Copy, Sparkles, Download, RefreshCw, AlertTriangle } from 'lucide-react';
+import { generatePartyIdea } from '../services/partyApi';
+import type { PartyIdeaRequest, PartyIdeaResponse } from '../services/partyApi';
 
 // Theme Presets for Invitation Card
 const INVITATION_THEMES = [
@@ -212,54 +214,17 @@ const getZodiacDetails = (dateStr: string) => {
   };
 };
 
-// Simulated AI Prompt database responses
-const getMockAIRecommendation = (prompt: string) => {
-  const normalized = prompt.toLowerCase();
-  
-  if (normalized.includes('beach') || normalized.includes('ocean') || normalized.includes('sand')) {
-    return {
-      title: 'Blush Sunset Oasis',
-      vibe: 'Casual beach luxury styled in warm pink sunset tones, gold accents, and bamboo structures.',
-      decor: 'Rose gold fairy lights, copper lanterns, natural jute carpets, dried palm centerpieces, champagne bar.',
-      food: 'Lobster slides, coconut lime shrimp skewers, rose water cupcakes, pink dragonfruit bites.',
-      drink: 'The "Blush Spritz" - Pink champagne, elderflower liqueur, fresh mint leaf garnish.',
-      music: 'Romantic acoustic covers, tropical chill house, soft vocal beats.'
-    };
-  }
-  
-  if (normalized.includes('cyber') || normalized.includes('neon') || normalized.includes('arcade') || normalized.includes('synthwave')) {
-    return {
-      title: 'Rose Gold Rave',
-      vibe: 'Modern creative grid layout focusing on soft rose gold accents, warm glowing panels, and industrial copper.',
-      decor: 'Blush LED tube frames, copper grid panels, holographic menu cards, floating candle pools.',
-      food: 'Pork belly skewers, pink sushi rice, raspberry rose macarons, white chocolate slider buns.',
-      drink: 'The "Rose Gold Glitch" - Bourbon, rose water syrup, ginger ale, gold glitter swirl.',
-      music: 'Soft synthwave tracks, lo-fi electronic, Daft Punk ambient covers.'
-    };
-  }
 
-  if (normalized.includes('cozy') || normalized.includes('stargaze') || normalized.includes('forest') || normalized.includes('wood')) {
-    return {
-      title: 'Champagne Stargazing Bonfire',
-      vibe: 'Cozy glamping cabin meets deep stellar vibes, featuring rose gold lanterns, wool blankets, and telescopes.',
-      decor: 'Canvas bell tents, sheepskin rugs, brass lanterns, massive stone firepit, blush starry sky projections.',
-      food: 'Gourmet caramel s\'mores, warm butternut squash soup, flatbreads with figs and goat cheese.',
-      drink: 'Warm Bourbon Maple Toddy served in toasted rose gold copper mugs.',
-      music: 'Indie acoustic folk, fingerstyle guitar covers, soft acoustic ambient.'
-    };
-  }
-
-  // Fallback
-  return {
-    title: 'Gilded Blush Lounge',
-    vibe: 'A high-end modern layout focusing on warm white glows, metallic brass accents, and glassmorphic designs.',
-    decor: 'Hanging geometric brass lamps, pink peony arrangements in gold vases, candlelit crystals, blush linen curtains.',
-    food: 'Truffle mushroom flatbreads, smoked salmon blinis, white chocolate raspberry tartlets, artisan cheese wheels.',
-    drink: 'The "Dream Sparkler" - French champagne, elderflower liqueur, garnished with a rose petal.',
-    music: 'Upbeat organic house, chic lounge jazz, contemporary chill covers.'
-  };
+const getOrdinalSuffix = (ageStr: string) => {
+  const num = parseInt(ageStr, 10);
+  if (isNaN(num)) return '';
+  const j = num % 10;
+  const k = num % 100;
+  if (j === 1 && k !== 11) return 'st';
+  if (j === 2 && k !== 12) return 'nd';
+  if (j === 3 && k !== 13) return 'rd';
+  return 'th';
 };
-
 // Zodiac Preset details for interactive constellation map
 const ZODIAC_PRESETS = [
   { sign: 'Aries', icon: '♈', date: '2001-04-05', range: 'Mar 21 - Apr 19' },
@@ -308,6 +273,7 @@ export default function PlannerSuite() {
   const [invTheme, setInvTheme] = useState(INVITATION_THEMES[0]);
   const [invName, setInvName] = useState('AURELIA');
   const [invAge, setInvAge] = useState('25');
+  const [isAgeFocused, setIsAgeFocused] = useState(false);
   const [invVibe, setInvVibe] = useState('Midnight Stars & Golden Bubbles');
   const [invDate, setInvDate] = useState('Saturday, Oct 12th • 9:00 PM');
   const [invVenue, setInvVenue] = useState('The Obsidian Lounge, NYC');
@@ -331,11 +297,22 @@ export default function PlannerSuite() {
     { id: 6, text: 'Curate party music playlist', completed: false },
     { id: 7, text: 'Order food, appetizers and drinks', completed: false }
   ]);
-  const [newCheckItem, setNewCheckItem] = useState('');
+  const [newTask, setNewTask] = useState('');
+
+  // AI Curation Form State
+  const [aiName, setAiName] = useState('Aurelia');
+  const [aiAge, setAiAge] = useState<string | number>('30');
+  const [aiBirthdate, setAiBirthdate] = useState('2026-08-15');
+  const [aiZodiac, setAiZodiac] = useState('Leo');
+  const [aiStyle, setAiStyle] = useState('Luxury Rose Gold');
+  const [aiInterests, setAiInterests] = useState('champagne, flowers, live jazz');
+  const [aiCity, setAiCity] = useState('Stockholm');
+  const [aiBudget, setAiBudget] = useState('15000 SEK');
+  const [aiGuestCount, setAiGuestCount] = useState<string | number>('18');
+  const [apiError, setApiError] = useState<string | null>(null);
 
   // AI State
-  const [aiPrompt, setAiPrompt] = useState('Cozy outdoor stargazing bonfire for a birthday with warm blankets and hot toddies.');
-  const [aiOutput, setAiOutput] = useState<any>(null);
+  const [aiOutput, setAiOutput] = useState<PartyIdeaResponse | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
 
   // Custom event listener for external tab selection and template loading
@@ -382,14 +359,14 @@ export default function PlannerSuite() {
   };
 
   // Add Item to Checklist
-  const addCheckItem = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newCheckItem.trim()) return;
+  const handleAddTask = () => {
+    const trimmed = newTask.trim();
+    if (!trimmed) return;
     setChecklist([
       ...checklist,
-      { id: Date.now(), text: newCheckItem.trim(), completed: false }
+      { id: Date.now(), text: trimmed, completed: false }
     ]);
-    setNewCheckItem('');
+    setNewTask('');
   };
 
   // Toggle checklist
@@ -413,27 +390,69 @@ export default function PlannerSuite() {
   const completedCount = checklist.filter(item => item.completed).length;
   const progressPercent = checklist.length > 0 ? Math.round((completedCount / checklist.length) * 100) : 0;
 
-  // Run AI Mock Generation
-  const handleAIGenerate = () => {
+  // Run API Generation
+  const handleAIGenerate = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!aiName.trim() || !aiCity.trim() || !aiStyle.trim()) {
+      setApiError('Please fill out the Name, City, and Party Style fields.');
+      return;
+    }
+
     setAiLoading(true);
     setAiOutput(null);
-    setTimeout(() => {
-      const res = getMockAIRecommendation(aiPrompt);
-      setAiOutput(res);
+    setApiError(null);
+
+    // Prepare interests as string list
+    const parsedInterests = aiInterests
+      ? aiInterests.split(',').map((interest) => interest.trim()).filter(Boolean)
+      : ['celebration'];
+
+    const requestPayload: PartyIdeaRequest = {
+      name: aiName,
+      age: Number(aiAge) || 0,
+      birthday_date: aiBirthdate || new Date().toISOString().split('T')[0],
+      zodiac_sign: aiZodiac || 'Leo',
+      party_style: aiStyle,
+      interests: parsedInterests,
+      city: aiCity,
+      budget: aiBudget || 'Custom',
+      guest_count: Number(aiGuestCount) || 10,
+    };
+
+    try {
+      const response = await generatePartyIdea(requestPayload);
+      setAiOutput(response);
+    } catch (err: any) {
+      console.error('API connection error:', err);
+      setApiError(err.message || 'Unable to connect to the backend server. Please make sure the service is running on http://127.0.0.1:8001.');
+    } finally {
       setAiLoading(false);
-    }, 1500);
+    }
   };
 
-  // Run AI Preset Generation
-  const handleAIPresetGenerate = (prompt: string) => {
-    setAiPrompt(prompt);
-    setAiLoading(true);
+  // Pre-fill form from presets
+  const handleAIPresetClick = (card: typeof AI_PRESET_CARDS[0]) => {
+    if (card.title === 'Cozy Glamping Campfire') {
+      setAiStyle('Sunset Garden & Alfresco Soirée');
+      setAiInterests('stargazing, glamping, bonfire, cozy blankets');
+      setAiBudget('4000 SEK');
+    } else if (card.title === 'Velvet Jazz Lounge') {
+      setAiStyle('Luxury Rose Gold Soirée');
+      setAiInterests('jazz, velvet, candlelight, cocktails');
+      setAiBudget('5000 SEK');
+    } else {
+      setAiStyle('Elegant Atelier & Watercolor Salon');
+      setAiInterests('sunset, beachside, champagne towers, tropical lofi');
+      setAiBudget('4500 SEK');
+    }
+    setAiName('Maja');
+    setAiAge(30);
+    setAiBirthdate('2026-06-25');
+    setAiZodiac('Gemini');
+    setAiCity('Stockholm');
+    setAiGuestCount(20);
+    setApiError(null);
     setAiOutput(null);
-    setTimeout(() => {
-      const res = getMockAIRecommendation(prompt);
-      setAiOutput(res);
-      setAiLoading(false);
-    }, 1500);
   };
 
   // Handle Zodiac Constellation Click
@@ -448,12 +467,204 @@ export default function PlannerSuite() {
     setTimeout(() => setInviteSaved(false), 3000);
   };
 
+  // Save & Download PNG using HTML5 Canvas
+  const handleDownloadPNG = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 800;
+    canvas.height = 1125;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // 1. Draw Background Gradient matching current theme
+    const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    if (invTheme.id === 'midnight') {
+      grad.addColorStop(0, '#09090b');
+      grad.addColorStop(0.5, '#1c1215');
+      grad.addColorStop(1, '#2e171d');
+    } else if (invTheme.id === 'gold') {
+      grad.addColorStop(0, '#0f0e0f');
+      grad.addColorStop(1, '#221c17');
+    } else if (invTheme.id === 'cyberpunk') {
+      grad.addColorStop(0, '#120e10');
+      grad.addColorStop(1, '#2b1c20');
+    } else { // sunset / rose quartz
+      grad.addColorStop(0, '#26161a');
+      grad.addColorStop(0.5, '#4a212a');
+      grad.addColorStop(1, '#632c38');
+    }
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // 2. Draw Soft Radial Ambient Glow
+    const glowColor = invTheme.glowColor || 'rgba(200, 122, 144, 0.3)';
+    const radialGlow = ctx.createRadialGradient(canvas.width / 2, 450, 100, canvas.width / 2, 450, 450);
+    radialGlow.addColorStop(0, glowColor);
+    radialGlow.addColorStop(1, 'transparent');
+    ctx.fillStyle = radialGlow;
+    ctx.beginPath();
+    ctx.arc(canvas.width / 2, 450, 450, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 3. Elegant Double Border Frame (Rose Gold / Champagne Gold tones)
+    ctx.strokeStyle = invTheme.accentColor;
+    ctx.lineWidth = 4;
+    ctx.strokeRect(40, 40, canvas.width - 80, canvas.height - 80);
+
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(50, 50, canvas.width - 100, canvas.height - 100);
+
+    // Decorative corner diamonds/crosses
+    const drawCornerCross = (cx: number, cy: number, size: number) => {
+      ctx.strokeStyle = invTheme.accentColor;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(cx - size, cy);
+      ctx.lineTo(cx + size, cy);
+      ctx.moveTo(cx, cy - size);
+      ctx.lineTo(cx, cy + size);
+      ctx.stroke();
+    };
+    drawCornerCross(40, 40, 10);
+    drawCornerCross(canvas.width - 40, 40, 10);
+    drawCornerCross(40, canvas.height - 40, 10);
+    drawCornerCross(canvas.width - 40, canvas.height - 40, 10);
+
+    // 4. Text Content Rendering
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    const fontSerif = 'Playfair Display, Georgia, Times New Roman, serif';
+    const fontSans = 'Montserrat, Arial, sans-serif';
+
+    // Header "YOU'RE INVITED"
+    ctx.fillStyle = invTheme.accentColor;
+    ctx.font = 'bold 22px ' + fontSerif;
+    if ('letterSpacing' in ctx) {
+      (ctx as any).letterSpacing = '6px';
+    }
+    ctx.fillText("YOU'RE INVITED TO CELEBRATE", canvas.width / 2, 180);
+    if ('letterSpacing' in ctx) {
+      (ctx as any).letterSpacing = 'normal';
+    }
+
+    // Name
+    ctx.fillStyle = invTheme.titleColor;
+    ctx.font = '700 56px ' + fontSerif;
+    ctx.fillText(invName || 'AURELIA', canvas.width / 2, 280);
+
+    // "Celebrating Their" / "Celebrating This"
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+    ctx.font = 'italic 18px Georgia, serif';
+    const celebrationHeader = isNaN(parseInt(invAge, 10)) ? "Celebrating This" : "Celebrating Their";
+    ctx.fillText(celebrationHeader.toUpperCase(), canvas.width / 2, 380);
+
+    // Age
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '900 135px ' + fontSans;
+    const ageVal = invAge || '00';
+    ctx.fillText(ageVal, canvas.width / 2 - 20, 490);
+
+    // Dynamic Suffix next to Age
+    const suffix = getOrdinalSuffix(ageVal);
+    if (suffix) {
+      ctx.fillStyle = invTheme.accentColor;
+      ctx.font = '700 38px ' + fontSans;
+      const ageWidth = ctx.measureText(ageVal).width;
+      ctx.fillText(suffix, canvas.width / 2 + (ageWidth / 2) - 10, 435);
+    }
+
+    // "Milestone" / "Birthday"
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+    ctx.font = 'italic 18px Georgia, serif';
+    const celebrationFooter = isNaN(parseInt(invAge, 10)) ? "MILESTONE" : "BIRTHDAY";
+    ctx.fillText(celebrationFooter, canvas.width / 2, 600);
+
+    // Divider Line
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(canvas.width / 2 - 120, 640);
+    ctx.lineTo(canvas.width / 2 + 120, 640);
+    ctx.stroke();
+
+    // Vibe Quote wrapping helper
+    const wrapText = (textStr: string, xPos: number, yPos: number, maxW: number, lineH: number) => {
+      const words = textStr.split(' ');
+      let currentLine = '';
+      let currentY = yPos;
+      for (let n = 0; n < words.length; n++) {
+        const testLine = currentLine + words[n] + ' ';
+        const metrics = ctx.measureText(testLine);
+        const testWidth = metrics.width;
+        if (testWidth > maxW && n > 0) {
+          ctx.fillText(currentLine, xPos, currentY);
+          currentLine = words[n] + ' ';
+          currentY += lineH;
+        } else {
+          currentLine = testLine;
+        }
+      }
+      ctx.fillText(currentLine, xPos, currentY);
+    };
+
+    // Vibe Quote wrapping
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'italic 26px Georgia, serif';
+    const quote = `"${invVibe || 'Midnight Stars & Golden Bubbles'}"`;
+    wrapText(quote, canvas.width / 2, 700, 620, 40);
+
+    // Divider Line
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+    ctx.beginPath();
+    ctx.moveTo(canvas.width / 2 - 120, 810);
+    ctx.lineTo(canvas.width / 2 + 120, 810);
+    ctx.stroke();
+
+    // Date
+    ctx.fillStyle = invTheme.accentColor;
+    ctx.font = '700 24px ' + fontSerif;
+    ctx.fillText(invDate || 'Saturday, Oct 12th • 9:00 PM', canvas.width / 2, 870);
+
+    // Venue Location
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+    ctx.font = '19px ' + fontSans;
+    ctx.fillText(invVenue || 'The Obsidian Lounge, NYC', canvas.width / 2, 925);
+
+    // Custom Atelier signature watermark
+    ctx.fillStyle = invTheme.accentColor;
+    ctx.font = 'italic 16px Georgia, serif';
+    if ('letterSpacing' in ctx) {
+      (ctx as any).letterSpacing = '3px';
+    }
+    ctx.fillText("✦ DREAM PARTY CELEBRATION ✦", canvas.width / 2, 1040);
+    if ('letterSpacing' in ctx) {
+      (ctx as any).letterSpacing = 'normal';
+    }
+
+    // Trigger Save & Download
+    try {
+      const dataUrl = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = `${invName.toLowerCase().replace(/\s+/g, '_')}_birthday_invitation.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error("Failed to generate and download PNG image:", err);
+    }
+
+    // Trigger visual state saved feedback
+    handleSaveInvite();
+  };
+
   // Copy hex color to clipboard
   const handleCopyColor = (color: string) => {
     navigator.clipboard.writeText(color);
     setCopiedColor(color);
     setTimeout(() => setCopiedColor(null), 2000);
   };
+
+  const ageLabel = invAge ? `${invAge}${getOrdinalSuffix(invAge)}` : 'AGE';
 
   return (
     <section id="planner" className="section" style={{ position: 'relative', overflow: 'hidden' }}>
@@ -634,13 +845,19 @@ export default function PlannerSuite() {
                         outline: 'none',
                       }}
                     />
-                    <span> as they celebrate their </span>
+                    <span> as they celebrate {isNaN(parseInt(invAge, 10)) ? 'this' : 'their'} </span>
                     <input 
                       type="text" 
                       placeholder="AGE" 
-                      value={invAge} 
-                      onChange={(e) => setInvAge(e.target.value)} 
-                      maxLength={3} 
+                      value={isAgeFocused ? invAge : ageLabel} 
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        const cleanVal = val.replace(/(st|nd|rd|th)$/i, '');
+                        setInvAge(cleanVal);
+                      }} 
+                      onFocus={() => setIsAgeFocused(true)}
+                      onBlur={() => setIsAgeFocused(false)}
+                      maxLength={10} 
                       style={{
                         background: 'transparent',
                         border: 'none',
@@ -651,11 +868,11 @@ export default function PlannerSuite() {
                         fontSize: '1.2rem',
                         textAlign: 'center',
                         padding: '0 0.2rem',
-                        width: '55px',
+                        width: '75px',
                         outline: 'none',
                       }}
                     />
-                    <span> milestone. Let's gather under a vibe of </span>
+                    <span> birthday. Let's gather under a vibe of </span>
                     <input 
                       type="text" 
                       placeholder="Midnight Stars & Golden Bubbles" 
@@ -720,9 +937,9 @@ export default function PlannerSuite() {
                   </div>
 
                   <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
-                    <button onClick={handleSaveInvite} className="btn btn-primary" style={{ padding: '0.7rem 1.5rem', fontSize: '0.88rem' }}>
+                    <button onClick={handleDownloadPNG} className="btn btn-primary" style={{ padding: '0.7rem 1.5rem', fontSize: '0.88rem' }}>
                       {inviteSaved ? <CheckCircle2 size={16} /> : <Download size={16} />}
-                      <span>{inviteSaved ? 'Saved to Templates!' : 'Save & Download'}</span>
+                      <span>{inviteSaved ? 'Saved & Downloaded!' : 'Save & Download'}</span>
                     </button>
                   </div>
                 </div>
@@ -773,7 +990,11 @@ export default function PlannerSuite() {
                         <p style={{ fontSize: '0.75rem', textTransform: 'uppercase', opacity: 0.6, margin: '0.2rem 0' }}>Celebrating Their</p>
                         <h2 style={{ fontSize: '3.6rem', fontWeight: 900, color: '#fff', lineHeight: 1, letterSpacing: '-0.02em', filter: 'drop-shadow(0 0 12px rgba(255,255,255,0.1))' }}>
                           {invAge || '00'}
-                          <span style={{ fontSize: '1.5rem', verticalAlign: 'super', fontWeight: 700 }}>th</span>
+                          {invAge && !isNaN(parseInt(invAge, 10)) && (
+                            <span style={{ fontSize: '1.5rem', verticalAlign: 'super', fontWeight: 700 }}>
+                              {getOrdinalSuffix(invAge)}
+                            </span>
+                          )}
                         </h2>
                       </div>
                       
@@ -1110,13 +1331,19 @@ export default function PlannerSuite() {
                 </div>
 
                 {/* Form to Add Checklist Item */}
-                <form onSubmit={addCheckItem} style={{ display: 'flex', gap: '0.6rem' }}>
+                <form 
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleAddTask();
+                  }} 
+                  style={{ display: 'flex', gap: '0.6rem' }}
+                >
                   <input
                     type="text"
                     placeholder="Describe a bespoke detail to register..."
                     className="glass-input"
-                    value={newCheckItem}
-                    onChange={(e) => setNewCheckItem(e.target.value)}
+                    value={newTask}
+                    onChange={(e) => setNewTask(e.target.value)}
                     style={{ 
                       flex: 1, 
                       background: 'transparent', 
@@ -1214,7 +1441,7 @@ export default function PlannerSuite() {
               <div className="tab-pane-content" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                 <div>
                   <h3 style={{ fontSize: '1.5rem', marginBottom: '0.4rem' }}>AI Celebration Proposal</h3>
-                  <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Describe your dream party and prompt the mockup AI. Try incorporating keywords like 'beach', 'stargaze', or 'neon'.</p>
+                  <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Describe your honoree profile to generate a customized, luxury celebration plan directly from the DreamParty AI engine.</p>
                 </div>
 
                 {/* Predefined Atmosphere presets */}
@@ -1224,7 +1451,7 @@ export default function PlannerSuite() {
                     {AI_PRESET_CARDS.map((card) => (
                       <button
                         key={card.title}
-                        onClick={() => handleAIPresetGenerate(card.prompt)}
+                        onClick={() => handleAIPresetClick(card)}
                         style={{
                           display: 'flex',
                           alignItems: 'center',
@@ -1243,45 +1470,179 @@ export default function PlannerSuite() {
                         <span style={{ fontSize: '1.8rem' }}>{card.emoji}</span>
                         <div>
                           <h4 style={{ fontSize: '0.92rem', fontWeight: 700, color: '#fff', marginBottom: '0.15rem' }}>{card.title}</h4>
-                          <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Tap to Curate</span>
+                          <span style={{ fontSize: '0.7rem', color: '#dec39d' }}>Tap to Pre-fill</span>
                         </div>
                       </button>
                     ))}
                   </div>
                 </div>
 
-                {/* Prompt box */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                  <textarea
-                    rows={3}
-                    placeholder="e.g., I want to plan a 30th birthday campfire celebration under the pine trees with cozy stargazing chairs, warm cider cocktails, and acoustic guitars..."
-                    className="glass-input"
-                    value={aiPrompt}
-                    onChange={(e) => setAiPrompt(e.target.value)}
-                    style={{ resize: 'none', padding: '1rem', lineHeight: '1.5' }}
-                  />
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Includes food, cocktail & music suggestion presets</span>
+                {/* Form fields */}
+                <form onSubmit={handleAIGenerate} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }} className="bespoke-form-grid">
+                    
+                    {/* Name */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                      <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#94a3b8' }}>Honoree Name</label>
+                      <input 
+                        type="text" 
+                        className="glass-input" 
+                        value={aiName} 
+                        onChange={(e) => setAiName(e.target.value)} 
+                        placeholder="e.g. Maja" 
+                        required
+                      />
+                    </div>
+
+                    {/* Age */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                      <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#94a3b8' }}>Age</label>
+                      <input 
+                        type="number" 
+                        className="glass-input" 
+                        value={aiAge} 
+                        onChange={(e) => setAiAge(e.target.value)} 
+                        placeholder="e.g. 30" 
+                        min="0"
+                        required
+                      />
+                    </div>
+
+                    {/* Celebration Date */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                      <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#94a3b8' }}>Celebration Date</label>
+                      <input 
+                        type="date" 
+                        className="glass-input" 
+                        value={aiBirthdate} 
+                        onChange={(e) => setAiBirthdate(e.target.value)} 
+                        style={{ colorScheme: 'dark' }}
+                        required
+                      />
+                    </div>
+
+                    {/* Zodiac Sign */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                      <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#94a3b8' }}>Zodiac Sign</label>
+                      <input 
+                        type="text" 
+                        className="glass-input" 
+                        value={aiZodiac} 
+                        onChange={(e) => setAiZodiac(e.target.value)} 
+                        placeholder="e.g. Gemini" 
+                        required
+                      />
+                    </div>
+
+                    {/* Party Style */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                      <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#94a3b8' }}>Party Style</label>
+                      <input 
+                        type="text" 
+                        className="glass-input" 
+                        value={aiStyle} 
+                        onChange={(e) => setAiStyle(e.target.value)} 
+                        placeholder="e.g. Luxury Rose Gold" 
+                        required
+                      />
+                    </div>
+
+                    {/* City */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                      <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#94a3b8' }}>Location (City)</label>
+                      <input 
+                        type="text" 
+                        className="glass-input" 
+                        value={aiCity} 
+                        onChange={(e) => setAiCity(e.target.value)} 
+                        placeholder="e.g. Stockholm" 
+                        required
+                      />
+                    </div>
+
+                    {/* Budget */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                      <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#94a3b8' }}>Budget</label>
+                      <input 
+                        type="text" 
+                        className="glass-input" 
+                        value={aiBudget} 
+                        onChange={(e) => setAiBudget(e.target.value)} 
+                        placeholder="e.g. 5000 SEK" 
+                        required
+                      />
+                    </div>
+
+                    {/* Guest Count */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                      <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#94a3b8' }}>Guest Count</label>
+                      <input 
+                        type="number" 
+                        className="glass-input" 
+                        value={aiGuestCount} 
+                        onChange={(e) => setAiGuestCount(e.target.value)} 
+                        placeholder="e.g. 20" 
+                        min="1"
+                        required
+                      />
+                    </div>
+
+                    {/* Interests */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', gridColumn: '1 / -1' }} className="col-span-full">
+                      <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#94a3b8' }}>Interests & Hobbies (Comma separated)</label>
+                      <input 
+                        type="text" 
+                        className="glass-input" 
+                        value={aiInterests} 
+                        onChange={(e) => setAiInterests(e.target.value)} 
+                        placeholder="e.g. champagne, flowers, jazz, fine dining" 
+                        required
+                      />
+                    </div>
+
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
                     <button
-                      onClick={handleAIGenerate}
+                      type="submit"
                       disabled={aiLoading}
                       className="btn btn-primary"
-                      style={{ padding: '0.6rem 1.5rem', fontSize: '0.88rem', gap: '0.5rem', display: 'flex', alignItems: 'center' }}
+                      style={{ padding: '0.75rem 2rem', fontSize: '0.9rem', gap: '0.5rem', display: 'flex', alignItems: 'center' }}
                     >
                       {aiLoading ? (
                         <>
                           <RefreshCw className="animate-spin" size={16} />
-                          <span>Processing...</span>
+                          <span>Generating Plan...</span>
                         </>
                       ) : (
                         <>
                           <Wand2 size={16} />
-                          <span>Generate Proposal</span>
+                          <span>Generate Celebration Plan</span>
                         </>
                       )}
                     </button>
                   </div>
-                </div>
+                </form>
+
+                {/* Error Banner */}
+                {apiError && (
+                  <div 
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.75rem',
+                      padding: '1rem 1.25rem',
+                      background: 'rgba(239, 68, 68, 0.08)',
+                      border: '1px solid rgba(239, 68, 68, 0.3)',
+                      borderRadius: '12px',
+                      color: '#f87171',
+                      fontSize: '0.9rem',
+                    }}
+                  >
+                    <AlertTriangle size={18} style={{ flexShrink: 0 }} />
+                    <span>{apiError}</span>
+                  </div>
+                )}
 
                 {/* AI Outputs Panel */}
                 <div>
@@ -1296,65 +1657,214 @@ export default function PlannerSuite() {
                     <div 
                       className="glass-card animate-fade-in" 
                       style={{
-                        padding: '1.75rem',
-                        border: '1px solid rgba(222, 195, 157, 0.2)',
-                        backgroundColor: 'rgba(222, 195, 157, 0.02)',
-                        boxShadow: '0 10px 30px rgba(222, 195, 157, 0.05)'
+                        padding: '2rem',
+                        border: '1px solid rgba(222, 195, 157, 0.25)',
+                        backgroundColor: 'rgba(22, 16, 18, 0.45)',
+                        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.65)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '2rem'
                       }}
                     >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '0.75rem' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                          <Wand2 size={18} color="#dec39d" />
-                          <h4 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#dec39d', fontFamily: 'var(--font-serif)', fontStyle: 'italic' }}>{aiOutput.title}</h4>
+                      {/* Header */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(222, 195, 157, 0.15)', paddingBottom: '1rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                          <Wand2 size={20} color="var(--color-primary)" />
+                          <h4 style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--color-secondary)', fontFamily: 'var(--font-serif)', fontStyle: 'italic' }}>
+                            {aiOutput.celebration_title}
+                          </h4>
                         </div>
-                        <span style={{ fontSize: '0.7rem', color: '#dec39d', backgroundColor: 'rgba(222, 195, 157, 0.1)', padding: '0.2rem 0.6rem', borderRadius: '4px', fontWeight: 600 }}>Proposal Ready</span>
+                        <span style={{ fontSize: '0.72rem', color: '#dec39d', backgroundColor: 'rgba(222, 195, 157, 0.12)', border: '1px solid rgba(222, 195, 157, 0.25)', padding: '0.25rem 0.75rem', borderRadius: '4px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                          Bespoke Plan Ready
+                        </span>
                       </div>
 
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                        <div>
-                          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', display: 'block', marginBottom: '0.2rem' }}>Aesthetic Vibe</span>
-                          <p style={{ fontSize: '0.88rem', color: '#e2e8f0', lineHeight: '1.5' }}>{aiOutput.vibe}</p>
-                        </div>
+                      {/* Content Grid */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }} className="ai-results-grid">
                         
-                        <div>
-                          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', display: 'block', marginBottom: '0.2rem' }}>Decor Plan</span>
-                          <p style={{ fontSize: '0.88rem', color: '#cbd5e1', lineHeight: '1.5' }}>{aiOutput.decor}</p>
+                        {/* Left column: Theme details, swatches, summary */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                          
+                          {/* Theme Idea */}
+                          <div>
+                            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '0.35rem' }}>The Concept</span>
+                            <p style={{ fontSize: '0.92rem', color: '#e2e8f0', lineHeight: '1.6' }}>{aiOutput.theme_idea}</p>
+                          </div>
+
+                          {/* Color Palette Chips */}
+                          <div>
+                            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '0.6rem' }}>Aesthetic Color Palette</span>
+                            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                              {aiOutput.color_palette.map((colorName, idx) => {
+                                const map: Record<string, string> = {
+                                  'blush rose': '#e5b3c0',
+                                  'champagne gold': '#dec39d',
+                                  'soft dusty pink': '#d4a3b0',
+                                  'warm sand': '#e5ddcf',
+                                  'sage green': '#8fbc8f',
+                                  'rose gold': '#b76e79',
+                                  'warm champagne': '#f0e6d2',
+                                  'soft peach': '#ffdab9',
+                                  'ivory': '#fffff0',
+                                  'dusty pink': '#d4a3b0',
+                                };
+                                const colorHex = map[colorName.toLowerCase().trim()] || '#dec39d';
+                                return (
+                                  <div 
+                                    key={idx} 
+                                    style={{ 
+                                      display: 'flex', 
+                                      alignItems: 'center', 
+                                      gap: '0.4rem', 
+                                      backgroundColor: 'rgba(255,255,255,0.03)', 
+                                      border: '1px solid rgba(255,255,255,0.08)',
+                                      padding: '0.3rem 0.7rem', 
+                                      borderRadius: '30px',
+                                      fontSize: '0.78rem',
+                                      color: '#f8f9fa'
+                                    }}
+                                  >
+                                    <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: colorHex, display: 'inline-block' }} />
+                                    <span>{colorName}</span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                          {/* AI Summary */}
+                          <div style={{ backgroundColor: 'rgba(222, 195, 157, 0.02)', border: '1px solid rgba(222, 195, 157, 0.12)', padding: '1.25rem', borderRadius: '14px' }}>
+                            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '0.35rem' }}>AI Curation Summary</span>
+                            <p style={{ fontSize: '0.88rem', color: '#cbd5e1', lineHeight: '1.5', margin: 0 }}>{aiOutput.ai_summary}</p>
+                          </div>
+
                         </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }} className="ai-split-grid">
-                          <div>
-                            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', display: 'block', marginBottom: '0.2rem' }}>Catering Menu</span>
-                            <p style={{ fontSize: '0.85rem', color: '#e2e8f0' }}>{aiOutput.food}</p>
+                        {/* Right column: Invitation, decor, food, music, timeline */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                          
+                          {/* Invitation Card */}
+                          <div style={{ backgroundColor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', padding: '1.25rem', borderRadius: '14px', position: 'relative' }}>
+                            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '0.5rem' }}>Elegant Invitation Text</span>
+                            <p style={{ fontSize: '0.85rem', color: '#cbd5e1', lineHeight: '1.6', margin: 0, fontStyle: 'italic', paddingRight: '2rem' }}>
+                              "{aiOutput.invitation_text}"
+                            </p>
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(aiOutput.invitation_text);
+                                alert('Invitation text copied to clipboard!');
+                              }}
+                              style={{
+                                position: 'absolute',
+                                top: '1.25rem',
+                                right: '1.25rem',
+                                background: 'none',
+                                border: 'none',
+                                color: '#dec39d',
+                                cursor: 'pointer',
+                                opacity: 0.7,
+                                transition: 'opacity 0.2s'
+                              }}
+                              onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+                              onMouseLeave={(e) => e.currentTarget.style.opacity = '0.7'}
+                              title="Copy to Clipboard"
+                            >
+                              <Copy size={16} />
+                            </button>
                           </div>
-                          <div>
-                            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', display: 'block', marginBottom: '0.2rem' }}>Signature Cocktail</span>
-                            <p style={{ fontSize: '0.85rem', color: '#e2e8f0' }}>{aiOutput.drink}</p>
+
+                          {/* Decor & Catering split */}
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }} className="split-details-grid">
+                            
+                            <div style={{ backgroundColor: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', padding: '1.15rem', borderRadius: '12px' }}>
+                              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '0.5rem' }}>Decor Plan</span>
+                              <ul style={{ listStyleType: 'none', display: 'flex', flexDirection: 'column', gap: '0.4rem', paddingLeft: 0, margin: 0 }}>
+                                {aiOutput.decoration_ideas.map((idea, i) => (
+                                  <li key={i} style={{ fontSize: '0.82rem', color: '#cbd5e1', display: 'flex', alignItems: 'flex-start', gap: '0.4rem' }}>
+                                    <span style={{ color: 'var(--color-primary)', fontSize: '0.6rem', marginTop: '0.2rem' }}>✦</span>
+                                    <span>{idea}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+
+                            <div style={{ backgroundColor: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', padding: '1.15rem', borderRadius: '12px' }}>
+                              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '0.5rem' }}>Catering Menu</span>
+                              <ul style={{ listStyleType: 'none', display: 'flex', flexDirection: 'column', gap: '0.4rem', paddingLeft: 0, margin: 0 }}>
+                                {aiOutput.food_and_drink_ideas.map((item, i) => (
+                                  <li key={i} style={{ fontSize: '0.82rem', color: '#cbd5e1', display: 'flex', alignItems: 'flex-start', gap: '0.4rem' }}>
+                                    <span style={{ color: '#dec39d', fontSize: '0.68rem' }}>🥂</span>
+                                    <span>{item}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+
                           </div>
-                          <div style={{ gridColumn: 'span 2' }} className="col-span-full">
-                            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', display: 'block', marginBottom: '0.2rem' }}>Playlist Recommendation</span>
-                            <p style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>{aiOutput.music}</p>
+
+                          {/* Music & Personal Touch */}
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }} className="split-details-grid">
+                            
+                            <div style={{ backgroundColor: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', padding: '1.15rem', borderRadius: '12px' }}>
+                              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '0.35rem' }}>Music Vibe</span>
+                              <p style={{ fontSize: '0.82rem', color: '#cbd5e1', margin: 0, lineHeight: '1.4' }}>{aiOutput.music_vibe}</p>
+                            </div>
+
+                            <div style={{ backgroundColor: 'rgba(222, 195, 157, 0.01)', border: '1px dashed rgba(222, 195, 157, 0.25)', padding: '1.15rem', borderRadius: '12px' }}>
+                              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '0.35rem' }}>Signature Highlight</span>
+                              <p style={{ fontSize: '0.82rem', color: '#cbd5e1', margin: 0, lineHeight: '1.4' }}>{aiOutput.personal_touch}</p>
+                            </div>
+
                           </div>
+
+                          {/* Timeline Schedule */}
+                          <div style={{ backgroundColor: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', padding: '1.25rem', borderRadius: '14px' }}>
+                            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '0.75rem' }}>Soirée Timeline</span>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                              {aiOutput.party_schedule.map((slot, i) => {
+                                const parts = slot.split(/ - (.*)/s);
+                                return (
+                                  <div key={i} style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+                                    <div style={{ minWidth: '60px', fontWeight: 700, color: 'var(--color-primary)', fontSize: '0.82rem' }}>
+                                      {parts[0]}
+                                    </div>
+                                    <div style={{ fontSize: '0.82rem', color: '#cbd5e1', flex: 1 }}>
+                                      {parts[1] || slot}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+
                         </div>
+
                       </div>
 
-                      <div style={{ display: 'flex', gap: '0.8rem', marginTop: '1.5rem' }}>
+                      {/* Action buttons */}
+                      <div style={{ display: 'flex', gap: '1rem', borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '1.25rem' }}>
                         <button
                           onClick={() => {
-                            setInvVibe(`${aiOutput.title} theme concept`);
+                            setInvName(aiName.toUpperCase());
+                            setInvAge(String(aiAge));
+                            setInvVibe(`${aiOutput.celebration_title}`);
+                            setInvVenue(`${aiCity} Atelier`);
+                            setInvDate(aiBirthdate);
                             setActiveTab('invitation');
                           }}
                           className="btn btn-secondary"
-                          style={{ padding: '0.5rem 1rem', fontSize: '0.8rem', borderRadius: '8px' }}
+                          style={{ padding: '0.6rem 1.5rem', fontSize: '0.85rem', borderRadius: '8px' }}
                         >
-                          Use in Invitation Creator
+                          Send to Invitation Atelier
                         </button>
                       </div>
+
                     </div>
                   )}
 
                   {!aiLoading && !aiOutput && (
                     <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center', border: '1px dashed rgba(255,255,255,0.08)', borderRadius: '16px', padding: '3.5rem', color: 'var(--text-muted)', textAlign: 'center' }}>
-                      Submit a concept query above to generate an custom celebration plan.
+                      Submit your celebration requirements above to curate your premium birthday plan.
                     </div>
                   )}
                 </div>
