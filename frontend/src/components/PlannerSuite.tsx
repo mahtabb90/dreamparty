@@ -1827,18 +1827,21 @@ export default function PlannerSuite() {
                           </div>
 
                           {/* Timeline Schedule */}
-                          <div style={{ backgroundColor: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', padding: '1.25rem', borderRadius: '14px' }}>
+                          <div className="soiree-timeline-card" style={{ backgroundColor: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', padding: '1.25rem', borderRadius: '14px' }}>
                             <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '0.75rem' }}>Soirée Timeline</span>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                            <div className="soiree-timeline-list" style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                               {aiOutput.party_schedule.map((slot, i) => {
-                                const parts = slot.split(/ - (.*)/s);
+                                const match = slot.match(/^((?:\d{1,2}:\d{2}(?:\s?[APap][Mm])?\s*-\s*)?\d{1,2}:\d{2}(?:\s?[APap][Mm])?)(?:\s*[:-]\s*)(.*)$/);
+                                const parts = match ? [match[1], match[2]] : ['', slot];
                                 return (
-                                  <div key={i} style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
-                                    <div style={{ minWidth: '60px', fontWeight: 700, color: 'var(--color-primary)', fontSize: '0.82rem' }}>
-                                      {parts[0]}
-                                    </div>
-                                    <div style={{ fontSize: '0.82rem', color: '#cbd5e1', flex: 1, overflowWrap: 'break-word', wordBreak: 'break-word' }}>
-                                      {parts[1] || slot}
+                                  <div key={i} className="soiree-timeline-item" style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+                                    {parts[0] && (
+                                      <div className="soiree-timeline-time" style={{ minWidth: '60px', fontWeight: 700, color: 'var(--color-primary)', fontSize: '0.82rem' }}>
+                                        {parts[0]}
+                                      </div>
+                                    )}
+                                    <div className="soiree-timeline-detail" style={{ fontSize: '0.82rem', color: '#cbd5e1', flex: 1 }}>
+                                      {parts[1]}
                                     </div>
                                   </div>
                                 );
@@ -1985,6 +1988,58 @@ export default function PlannerSuite() {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 1.25rem;
+        }
+
+        /* Soirée Timeline Styles */
+        .soiree-timeline-card {
+          min-width: 0 !important;
+          width: 100% !important;
+          overflow: hidden !important;
+        }
+        .soiree-timeline-list {
+          width: 100% !important;
+          min-width: 0 !important;
+        }
+        .soiree-timeline-item {
+          display: flex !important;
+          gap: 0.75rem !important;
+          align-items: flex-start !important;
+          width: 100% !important;
+          min-width: 0 !important;
+        }
+        .soiree-timeline-time {
+          min-width: 70px !important;
+          flex-shrink: 0 !important;
+          font-weight: 700 !important;
+          color: var(--color-primary) !important;
+          font-size: 0.82rem !important;
+          overflow-wrap: break-word !important;
+          white-space: normal !important;
+        }
+        .soiree-timeline-detail {
+          font-size: 0.82rem !important;
+          color: #cbd5e1 !important;
+          flex: 1 1 0% !important;
+          min-width: 0 !important;
+          overflow-wrap: break-word !important;
+          word-break: break-word !important;
+          white-space: normal !important;
+        }
+
+        /* Responsive timeline stacking for tablet & mobile */
+        @media (max-width: 900px) {
+          .soiree-timeline-item {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 0.25rem !important;
+          }
+          .soiree-timeline-time {
+            min-width: 0 !important;
+            width: 100% !important;
+          }
+          .soiree-timeline-detail {
+            width: 100% !important;
+          }
         }
 
         @media (min-width: 768px) {
