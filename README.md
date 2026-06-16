@@ -441,17 +441,12 @@ The project is currently in a polished MVP / pre-deployment stage.
 
 Planned next improvements:
 
-* deploy backend on Render
-* deploy frontend on Vercel
-* connect production frontend to production backend
-* test the full live AI flow in production
 * improve mobile responsiveness further
 * add saved celebration history
 * add user authentication in a later version
 * add user dashboard for saved parties
 * add more invitation templates
 * add more advanced AI personalization
-* create a public portfolio case study
 
 ---
 
