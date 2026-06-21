@@ -271,12 +271,12 @@ export default function PlannerSuite() {
 
   // Invitation State
   const [invTheme, setInvTheme] = useState(INVITATION_THEMES[0]);
-  const [invName, setInvName] = useState('AURELIA');
-  const [invAge, setInvAge] = useState('25');
+  const [invName, setInvName] = useState('MAHTAB');
+  const [invAge, setInvAge] = useState('35');
   const [isAgeFocused, setIsAgeFocused] = useState(false);
-  const [invVibe, setInvVibe] = useState('Midnight Stars & Golden Bubbles');
-  const [invDate, setInvDate] = useState('Saturday, Oct 12th • 9:00 PM');
-  const [invVenue, setInvVenue] = useState('The Obsidian Lounge, NYC');
+  const [invVibe, setInvVibe] = useState('An elegant rose-gold evening of celebration, music and unforgettable memories.');
+  const [invDate, setInvDate] = useState('Friday, Aug 17 • 7:00 PM');
+  const [invVenue, setInvVenue] = useState('Stockholm Atelier');
   const [inviteSaved, setInviteSaved] = useState(false);
 
   // Theme Generator State
